@@ -35,6 +35,8 @@ Short, durable facts and decisions. Append new ones with date.
 - 2026-11-02: Phase 2 done. Savings = (min monthly gross - tax - CoL) x FX. SG no CPF (EP holder), MY resident bands + RM9,000 relief + RM400 rebate, NZ 2025-26 bands + 2026-27 ACC (2026-27 bands unconfirmed). CoL defaults are rough, from conflicting sources, editable. Priority weights: savings 40, stack 25, country 15, work mode 10, employer 10.
 - 2026-11-02: Monthly salary above 100,000 is treated as annual (employer data-entry error). Rows saved before this rule keep their old salary until the DB is rebuilt.
 
+- 2026-11-02: Blocked sources (bot check): JobStreet SG/MY, SEEK NZ, Robert Walters. Workhere down until early 2027. Never bypass bot checks. Tracked in `todos.md`.
+
 ## Open questions
 - None.
 

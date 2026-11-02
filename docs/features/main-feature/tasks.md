@@ -1,7 +1,7 @@
 # Tasks — Expat Job Radar
 
 Legend: `[x]` done, `[ ]` todo. Each phase ends with a checkpoint: stop, review, approve before next phase.
-Design details: `tehnical-solution.md`. Requirements: `prd.md`.
+Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and open risks: `todos.md`.
 
 ## Phase 0 — Project init
 - [x] Scaffold Next.js (TypeScript, App Router, ESLint) → verify: `npm run build` passes
@@ -38,7 +38,8 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`.
 
 ## Phase 3 — More scrapers
 - [ ] Add headless browser (Playwright) for sources with no public API or JS-rendered pages → verify: one JS-rendered page scraped headless
-- [ ] jobstreet SG/MY, hiredly, seek NZ, trademe, workhere → verify: each logs found/inserted counts
+- [ ] hiredly, trademe → verify: each logs found/inserted counts
+- [ ] jobstreet SG/MY, seek NZ, workhere, robert walters → BLOCKED, see `todos.md`
 - [ ] Relocate.me, Tech in Asia Jobs → verify: same
 - [ ] Agencies: Randstad, Michael Page, Robert Walters, Hays, Monroe → verify: same
 - [ ] LinkedIn: logged-in scraper, creds/session in `.env.local`, on/off setting → verify: failure does not affect other sources

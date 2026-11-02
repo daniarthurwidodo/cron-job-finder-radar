@@ -1,0 +1,14 @@
+import { chromium } from "playwright-core";
+const [url, selector] = process.argv.slice(2);
+const browser = await chromium.launch({ executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
+const page = await browser.newPage();
+await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
+await page.waitForTimeout(4000);
+const links = await page.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")).filter((h) => /job|vacanc|listing/i.test(h || "")).slice(0, 6));
+console.log("links", links);
+const count = await page.locator(selector).count();
+console.log("selector", selector, count);
+if (count) console.log((await page.locator(selector).first().evaluate((el) => el.outerHTML)).replace(/\s+/g, " ").slice(0, 1800));
+const ld = await page.$$eval('script[type="application/ld+json"]', (s) => s.map((x) => x.textContent.slice(0, 300)));
+console.log("ld", ld);
+await browser.close();

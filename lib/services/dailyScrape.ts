@@ -9,6 +9,7 @@ import { ExchangeRateRepository } from "@/lib/repositories/exchangeRateRepositor
 import { fetchRatesToIdr } from "@/lib/fx/exchangeRateClient";
 import { ExchangeRateService } from "@/lib/services/exchangeRateService";
 import { FinancialService } from "@/lib/services/financialService";
+import { michaelPageScraper } from "@/lib/scrapers/michaelpage";
 import { mycareersfutureScraper } from "@/lib/scrapers/mycareersfuture";
 import { IngestService } from "@/lib/services/ingestService";
 import type { Scraper } from "@/lib/types";
@@ -21,7 +22,7 @@ export interface ScrapeSummary {
 
 const EMPTY_COUNTS: ScrapeRunCounts = { found: 0, inserted: 0, duplicates: 0, filtered: 0, invalid: 0 };
 
-const SCRAPERS: Scraper[] = [mycareersfutureScraper];
+const SCRAPERS: Scraper[] = [mycareersfutureScraper, michaelPageScraper];
 
 export async function runScraper({
   scraper,

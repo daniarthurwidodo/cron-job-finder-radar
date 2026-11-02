@@ -42,6 +42,7 @@ export const JOB_STATUSES = {
 
 export const SOURCE_CODES = {
   MYCAREERSFUTURE: "mycareersfuture",
+  MICHAEL_PAGE_SG: "michaelpage_sg",
 } as const;
 
 export const SALARY_PERIODS = {
@@ -214,3 +215,20 @@ export const WORK_MODE_PRIORITY_SCORES: Record<string, number> = {
   [WORK_MODES.FLEXIBLE]: 40,
   [WORK_MODES.ON_SITE]: 0,
 };
+
+export const BROWSER_PATH_ENV_NAME = "CHROME_EXECUTABLE_PATH";
+export const DEFAULT_BROWSER_PATHS: Record<string, string> = {
+  darwin: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  linux: "/usr/bin/chromium",
+};
+export const BROWSER_NAVIGATION_TIMEOUT_MS = 45000;
+export const BROWSER_READY_TIMEOUT_MS = 20000;
+export const BROWSER_PAGE_DELAY_MS = 2000;
+export const BOT_CHALLENGE_TITLE_PATTERN = /just a moment|access to this page has been denied|verify you are (a )?human|attention required/i;
+export const HTTP_STATUS_FORBIDDEN = 403;
+export const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+
+export const MICHAEL_PAGE_SG_LIST_URL = "https://www.michaelpage.com.sg/jobs/technology";
+export const MICHAEL_PAGE_BASE_URL = "https://www.michaelpage.com.sg";
+export const MICHAEL_PAGE_MAX_PAGES = 8;
+export const MICHAEL_PAGE_CLIENT_COMPANY = "Michael Page (client undisclosed)";
