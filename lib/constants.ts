@@ -283,3 +283,14 @@ export const CV_MAX_SKILLS = 30;
 export const COVER_LETTER_MAX_SKILLS = 5;
 export const UNDISCLOSED_COMPANY_PATTERN = /undisclosed/i;
 export const WORK_AUTHORIZATION_MAX_LENGTH = 300;
+
+export const APPLY_STATES = {
+  NEEDS_DOCUMENTS: "needs_documents",
+  READY: "ready",
+  APPLIED: "applied",
+  SKIPPED: "skipped",
+} as const;
+export const APPLY_FILL_PROFILE_SOURCES = [SOURCE_CODES.MICHAEL_PAGE_SG] as const;
+export const APPLY_LINK_PATTERN = /^\s*apply( now| for this job)?\s*$/i;
+export const APPLY_PAGE_SETTLE_MS = 2500;
+export const APPLY_TEMP_DIR_PREFIX = "radar-apply-";
