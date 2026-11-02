@@ -347,3 +347,10 @@ export const SALARY_FILTER = { DISCLOSED: "yes", HIDDEN: "no" } as const;
 export const COMPARE_FORM_ID = "compare-form";
 export const SORT_DIRECTIONS = { DESC: "desc", ASC: "asc" } as const;
 export const DEFAULT_SORT_DIRECTION = SORT_DIRECTIONS.DESC;
+
+// Interview hours are evaluated in Jakarta time (WIB, UTC+7, no daylight saving).
+export const JAKARTA_UTC_OFFSET_HOURS = 7;
+export const MS_PER_HOUR = 3_600_000;
+export const WEEKDAYS = { SUNDAY: 0, SATURDAY: 6 } as const;
+export const WORKDAY_START_HOUR = 10;
+export const WORKDAY_END_HOUR = 18;
