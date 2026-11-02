@@ -49,6 +49,8 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Phase 4 approved. Phase 5 (Google Calendar / OAuth) SKIPPED. Next: Phase 6 (CV + letter), then Phase 7 (assisted apply).
 
+- 2026-11-02: Phase 6 built with templates (no AI). Verified live on a real job: 2-page ATS PDF with text layer, letter, per-country work-authorization line (editable in Settings). DOCX deferred.
+
 ## Open questions
 - None.
 

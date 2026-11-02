@@ -282,3 +282,4 @@ export const CV_COMPACTION_LEVELS = [
 export const CV_MAX_SKILLS = 30;
 export const COVER_LETTER_MAX_SKILLS = 5;
 export const UNDISCLOSED_COMPANY_PATTERN = /undisclosed/i;
+export const WORK_AUTHORIZATION_MAX_LENGTH = 300;

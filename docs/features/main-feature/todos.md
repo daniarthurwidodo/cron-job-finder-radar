@@ -17,6 +17,17 @@ Built and verified live: MyCareersFuture (API), Michael Page SG (headless browse
 
 Skipped by user decision (2026-11-02), not built: Hiredly MY, Trade Me NZ, Hays SG, Randstad SG, Monroe, Relocate.me, Tech in Asia, LinkedIn. Manual import for blocked boards: also skipped. Reachable when wanted later: Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
 
+## CV generator notes (Phase 6)
+| Item | Note |
+| :--- | :--- |
+| DOCX output not built | PRD G6 mentions PDF plus DOCX. PDF has a real text layer (fonts embedded, no images), which ATS systems read. Add DOCX with a small library if a site asks for it |
+| Contact email | First email in the CV (`work.daniarthurwidodo@gmail.com`) is used; the second is ignored |
+| Role location | CV has no per-role city, so none is printed (nothing is invented); the ATS rule asks for location per role |
+| "over 8 years" summary text | Copied as written from your reference CV; fix the CV file to change it |
+| Added `Location: Jakarta, Indonesia` to `data/reference-cv.md` | Taken from LinkedIn; ATS rule needs city and country |
+| Work authorization default text | "Open to relocation to X. Requires visa sponsorship (...)" per country; edit in Settings |
+| CV and letter text quality | Letter is a plain template, not AI-written. Switch to the Claude API later if you want richer letters (needs `ANTHROPIC_API_KEY`) |
+
 ## Role filter caveat
 Title-only match drops generic titles ("Software Engineer", "Senior Software Developer", "Dot Net Developer") even when the description is full stack. On the first 768 saved jobs this kept 203. If the list feels too thin, options: also accept generic software titles whose description mentions web / React / Angular / Next.js, or add more title words (for example "UI engineer", "Angular developer").
 

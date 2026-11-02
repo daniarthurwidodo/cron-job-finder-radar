@@ -1,7 +1,8 @@
-import { COUNTRY_CODES, HISTORY_DAYS_LIMIT, LIST_PAGE_SIZE, JOB_STATUSES, MINOR_UNITS_PER_MAJOR_UNIT, RECENT_SCRAPE_RUNS_LIMIT } from "@/lib/constants";
+import { COUNTRY_CODES, HISTORY_DAYS_LIMIT, LIST_PAGE_SIZE, WORK_AUTHORIZATION_MAX_LENGTH, JOB_STATUSES, MINOR_UNITS_PER_MAJOR_UNIT, RECENT_SCRAPE_RUNS_LIMIT } from "@/lib/constants";
 import type { JobFilters } from "@/lib/dashboard/filters";
 import type { ColBenchmarkRecord, ColBenchmarkRepository } from "@/lib/repositories/colBenchmarkRepository";
 import type { DashboardJob, JobListQuery, JobQueryRepository } from "@/lib/repositories/jobQueryRepository";
+import type { WorkAuthorizationRecord, WorkAuthorizationRepository } from "@/lib/repositories/workAuthorizationRepository";
 import type { ScrapeRunRepository, ScrapeRunRow } from "@/lib/repositories/scrapeRunRepository";
 import type { FinancialService } from "@/lib/services/financialService";
 
@@ -21,6 +22,7 @@ export interface DashboardDependencies {
   scrapeRuns: ScrapeRunRepository;
   colBenchmarks: ColBenchmarkRepository;
   financials: FinancialService;
+  workAuthorizations: WorkAuthorizationRepository;
 }
 
 export class DashboardService {
@@ -74,5 +76,17 @@ export class DashboardService {
     const monthlyMinor = Math.round(monthlyMajor * MINOR_UNITS_PER_MAJOR_UNIT);
     this.dependencies.colBenchmarks.updateMonthly({ countryCode, monthlyMinor });
     this.dependencies.financials.recalculateAll();
+  }
+
+  listWorkAuthorizations(): WorkAuthorizationRecord[] {
+    return this.dependencies.workAuthorizations.list();
+  }
+
+  updateWorkAuthorization({ countryCode, statement }: WorkAuthorizationRecord): void {
+    if (!Object.values(COUNTRY_CODES).includes(countryCode as never)) throw new Error(`Invalid country: ${countryCode}`);
+    const trimmed = statement.trim();
+    if (!trimmed) throw new Error("Work authorization statement cannot be empty");
+    if (trimmed.length > WORK_AUTHORIZATION_MAX_LENGTH) throw new Error(`Work authorization statement is longer than ${WORK_AUTHORIZATION_MAX_LENGTH} characters`);
+    this.dependencies.workAuthorizations.update({ countryCode, statement: trimmed });
   }
 }

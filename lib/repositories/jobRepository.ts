@@ -87,6 +87,20 @@ const UPDATE_FINANCIALS_SQL = `
     priority_score = @priorityScore, updated_at = CURRENT_TIMESTAMP
   WHERE id = @jobId`;
 
+export interface DocumentContext {
+  id: number;
+  title: string;
+  companyName: string;
+  countryCode: string;
+  description: string;
+  techTags: string[];
+}
+
+const SELECT_DOCUMENT_CONTEXT_SQL = `
+  SELECT j.id, j.title, co.name AS companyName, c.code AS countryCode, j.description
+  FROM jobs j JOIN companies co ON co.id = j.company_id JOIN countries c ON c.id = j.country_id
+  WHERE j.id = ? AND j.deleted_at IS NULL`;
+
 const SELECT_JOB_BY_ID_SQL = `
   SELECT j.id, j.title, j.city, c.code AS countryCode, w.code AS workModeCode, s.code AS seniorityCode,
          st.code AS statusCode, j.stack_match_score AS stackMatchScore, j.dedup_hash AS dedupHash
@@ -138,6 +152,11 @@ export class JobRepository {
                 priority_score AS priorityScore FROM jobs WHERE id = ?`,
       )
       .get(jobId) as JobFinancials | undefined;
+  }
+
+  findDocumentContext(jobId: number): DocumentContext | undefined {
+    const row = this.db.prepare(SELECT_DOCUMENT_CONTEXT_SQL).get(jobId) as Omit<DocumentContext, "techTags"> | undefined;
+    return row ? { ...row, techTags: this.listTechTags(jobId) } : undefined;
   }
 
   listTechTags(jobId: number): string[] {

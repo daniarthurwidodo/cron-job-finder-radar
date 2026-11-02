@@ -1,4 +1,11 @@
 import type Database from "better-sqlite3";
+import fs from "node:fs";
+import path from "node:path";
+import { REFERENCE_CV_PATH } from "@/lib/constants";
+import { DocumentService } from "@/lib/cv/documentService";
+import { renderPdf } from "@/lib/cv/renderPdf";
+import { DocumentRepository } from "@/lib/repositories/documentRepository";
+import { WorkAuthorizationRepository } from "@/lib/repositories/workAuthorizationRepository";
 import { getDb } from "@/lib/db";
 import { ColBenchmarkRepository } from "@/lib/repositories/colBenchmarkRepository";
 import { CompanyRepository } from "@/lib/repositories/companyRepository";
@@ -34,11 +41,19 @@ export function buildServices(db: Database.Database) {
       jobSources: new JobSourceRepository(db),
       runInTransaction,
     }),
+    documents: new DocumentService({
+      jobs,
+      documents: new DocumentRepository(db),
+      workAuthorizations: new WorkAuthorizationRepository(db),
+      loadReferenceCvMarkdown: () => fs.readFileSync(path.join(process.cwd(), REFERENCE_CV_PATH), "utf8"),
+      renderPdf,
+    }),
     dashboard: new DashboardService({
       jobQueries: new JobQueryRepository(db),
       scrapeRuns,
       colBenchmarks: new ColBenchmarkRepository(db),
       financials,
+      workAuthorizations: new WorkAuthorizationRepository(db),
     }),
   };
 }

@@ -72,14 +72,14 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 
 ## Phase 6 — CV and cover letter
 - [x] Reference CV `data/reference-cv.md` exists and is git-ignored → verify: `git check-ignore` matches
-- [ ] Tailored CV generator, 2-page international format, work-authorization line per country (setting) → verify: PDF is 2 pages
-- [ ] ATS-only renderer (single column, standard headings, no tables/images, text layer PDF + DOCX) and ATS validator → verify: validator fails a CV with a table/image/unknown heading; passes the generated CV; extracted PDF text order is correct
-- [ ] Interest letter generator → verify: uses only facts from reference CV
-- [ ] Store in `documents`, download from job detail → verify: manual check
-- [ ] Checkpoint: approve Phase 6
+- [x] Tailored CV generator, 2-page international format, work-authorization line per country (setting) → verify: PDF is 2 pages
+- [x] ATS-only renderer (single column, standard headings, no tables/images, text layer PDF; DOCX deferred, see todos.md) and ATS validator → verify: validator fails a CV with a table/image/unknown heading; passes the generated CV; extracted PDF text order is correct
+- [x] Interest letter generator → verify: uses only facts from reference CV
+- [x] Store in `documents`, download from job detail → verify: manual check
+- [ ] Checkpoint: approve Phase 6 (waiting for user review)
 
 ## Phase 7 — Assisted apply queue (depends on Phase 6)
-- [ ] Migration `0003`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
+- [ ] Migration `0004`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
 - [ ] Queue / unqueue action and Apply queue page with states (Needs documents, Ready, Applied, Skipped) → verify: queue a job, it appears; unqueue, it disappears; default is not queued
 - [ ] Generate documents for queued job on demand (reuses Phase 6) → verify: documents attached, state becomes Ready
 - [ ] "Start apply": headed browser opens apply page, pre-fills what the site adapter supports, stops → verify: manual run on one MyCareersFuture job and one Michael Page job; app never clicks submit

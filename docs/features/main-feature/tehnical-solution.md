@@ -153,15 +153,15 @@ Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-
 
 - Input: reference CV as Markdown at `data/reference-cv.md` (git-ignored), read directly, no parser needed. The other input is a job row.
 - Output: per-job tailored CV (2-page international format, states work authorization: "Requires Visa Sponsorship" / "Open to Relocation") and interest letter.
-- Mechanism: LLM call (Claude API) with reference CV + job description; output stored in `documents`, rendered to PDF.
+- Mechanism (decided 2026-11-02): templates, no AI. Reference CV Markdown is parsed; per job the code reorders skills and bullets by keyword match (skills use the job posting spelling when they map to a known stack keyword), compacts level by level until the PDF is at most 2 pages, adds the per-country work-authorization line, and fills a letter template. Output is stored in `documents` (Markdown / text) and rendered to PDF on download with headless Chrome. Nothing leaves the machine.
 - Hard rule in prompt: only reorder/emphasize facts present in reference CV, never invent experience.
 - **ATS format is mandatory** (PRD G6): the renderer has one layout only, so non-ATS output is not possible. Layout: single column, plain text blocks, standard headings, no images/tables. Rules are encoded as constants plus a validator that runs on the generated Markdown/PDF text and fails generation if it finds a table, image, unknown heading, missing contact line, missing work-authorization line, or more than 2 pages.
-- Render path: generated Markdown -> single-column HTML/CSS template -> PDF with text layer (and DOCX). Library choice in Phase 6.
+- Render path: generated Markdown -> single-column HTML/CSS (Arial 10pt, A4) -> PDF with text layer via `page.pdf()`. No extra library. DOCX deferred.
 - Separate phase; depends on decisions in Open Questions.
 
 ## 10a. Apply queue (assisted apply)
 
-- Data: `jobs.apply_queued_at TEXT NULL` (NULL = not queued) via migration `0003`; applied/skipped use the existing status pipeline plus a `Skipped` handling decision (reuse `archived` with a note, or add lookup row; decide at build time). Documents live in `documents` (Phase 6).
+- Data: `jobs.apply_queued_at TEXT NULL` (NULL = not queued) via migration `0004` (`0003` is documents); applied/skipped use the existing status pipeline plus a `Skipped` handling decision (reuse `archived` with a note, or add lookup row; decide at build time). Documents live in `documents` (Phase 6).
 - Flow: user queues job -> service ensures CV + letter exist (generate if missing) -> "Start apply" server action launches a **headed** (visible) browser via the shared `withBrowserPage` helper with `headless: false` -> adapter per site fills fields -> returns control; the page stays open for the user. App has no code path that clicks the final submit.
 - Adapters: one small function per source (`mycareersfuture`, `michaelpage_sg`) that maps CV fields to that site's form; unknown sites just open the URL.
 - Safety: a bot check or login wall is not handled by the app; the window stays open for the user. No application-site credentials are stored. Server action requires the explicit job id and only acts on queued jobs.

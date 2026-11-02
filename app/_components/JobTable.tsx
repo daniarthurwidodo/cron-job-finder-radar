@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { changeJobStatus } from "@/app/actions";
 import { JOB_STATUSES, MAX_COMPARE_JOBS } from "@/lib/constants";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, SENIORITY_LABELS, STATUS_LABELS, WORK_MODE_LABELS } from "@/lib/dashboard/format";
@@ -48,6 +49,9 @@ function JobRow({ job, day }: { job: DashboardJob; day: string }) {
           {job.companyName} - {job.city}
         </div>
         {job.techTags && <div className="text-xs text-slate-500">{job.techTags}</div>}
+        <Link href={`/jobs/${job.id}`} className="text-xs underline">
+          CV and letter
+        </Link>
       </td>
       <td className="pr-3 text-xs">{labelOf({ labels: COUNTRY_LABELS, code: job.countryCode })}</td>
       <td className="pr-3 text-xs">
