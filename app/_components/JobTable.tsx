@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { changeJobStatus, queueJobForApply } from "@/app/actions";
-import { JOB_STATUSES, MAX_COMPARE_JOBS } from "@/lib/constants";
+import { COUNTRY_CODES, FILTER_FORM_ID, JOB_STATUSES, MAX_COMPARE_JOBS, SALARY_FILTER, SENIORITIES, WORK_MODES } from "@/lib/constants";
+import type { JobFilters } from "@/lib/dashboard/filters";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, SENIORITY_LABELS, STATUS_LABELS, WORK_MODE_LABELS } from "@/lib/dashboard/format";
 import type { DashboardJob } from "@/lib/repositories/jobQueryRepository";
 
 const COMPARE_FORM_ID = "compare-form";
+const FILTER_FIELD_CLASS = "w-full rounded border border-slate-300 bg-transparent px-1 py-0.5 text-xs font-normal dark:border-slate-600";
+const SALARY_FILTER_LABELS: Record<string, string> = {
+  [SALARY_FILTER.DISCLOSED]: "Disclosed",
+  [SALARY_FILTER.HIDDEN]: "Not disclosed",
+};
 const DAY_LENGTH = 10;
 
 function StatusForm({ job }: { job: DashboardJob }) {
@@ -83,7 +89,68 @@ function JobRow({ job, day }: { job: DashboardJob; day: string }) {
   );
 }
 
-export function JobTable({ jobs, day }: { jobs: DashboardJob[]; day: string }) {
+function pick(labels: Record<string, string>, codes: string[]): Record<string, string> {
+  return Object.fromEntries(codes.map((code) => [code, labels[code]]));
+}
+
+function FilterSelect({ name, value, options, emptyLabel }: { name: string; value?: string; options: Record<string, string>; emptyLabel: string }) {
+  return (
+    <select name={name} form={FILTER_FORM_ID} defaultValue={value ?? ""} aria-label={emptyLabel} className={FILTER_FIELD_CLASS}>
+      <option value="">{emptyLabel}</option>
+      {Object.entries(options).map(([code, label]) => (
+        <option key={code} value={code}>
+          {label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function FilterNumber({ name, value, placeholder, max }: { name: string; value?: number; placeholder: string; max?: number }) {
+  return (
+    <input type="number" name={name} form={FILTER_FORM_ID} min={0} max={max} defaultValue={value} placeholder={placeholder} aria-label={placeholder} className={FILTER_FIELD_CLASS} />
+  );
+}
+
+function FilterRow({ filters }: { filters: JobFilters }) {
+  return (
+    <tr className="border-b border-slate-300 align-top dark:border-slate-700">
+      <th className="pb-2" />
+      <th className="pb-2 pr-3">
+        <input type="search" name="q" form={FILTER_FORM_ID} defaultValue={filters.search ?? ""} placeholder="Title or company" aria-label="Search title or company" className={FILTER_FIELD_CLASS} />
+      </th>
+      <th className="pb-2 pr-3">
+        <FilterSelect name="country" value={filters.countryCode} emptyLabel="All" options={pick(COUNTRY_LABELS, Object.values(COUNTRY_CODES))} />
+      </th>
+      <th className="pb-2 pr-3">
+        <div className="flex flex-col gap-1">
+          <FilterSelect name="workMode" value={filters.workModeCode} emptyLabel="Any work mode" options={pick(WORK_MODE_LABELS, Object.values(WORK_MODES))} />
+          <FilterSelect name="seniority" value={filters.seniorityCode} emptyLabel="Any level" options={pick(SENIORITY_LABELS, Object.values(SENIORITIES))} />
+        </div>
+      </th>
+      <th className="pb-2 pr-3">
+        <FilterSelect name="salary" value={filters.salary} emptyLabel="Any" options={SALARY_FILTER_LABELS} />
+      </th>
+      <th className="pb-2 pr-3">
+        <FilterNumber name="minSavings" value={filters.minSavingsIdr} placeholder="Min IDR" />
+      </th>
+      <th className="pb-2 pr-3">
+        <FilterNumber name="minStack" value={filters.minStack} placeholder="Min %" max={100} />
+      </th>
+      <th className="pb-2 pr-3">
+        <FilterNumber name="minPriority" value={filters.minPriority} placeholder="Min" max={100} />
+      </th>
+      <th className="pb-2">
+        <FilterSelect name="status" value={filters.statusCode} emptyLabel="All" options={pick(STATUS_LABELS, Object.values(JOB_STATUSES))} />
+        <button type="submit" form={FILTER_FORM_ID} className="mt-1 w-full rounded bg-slate-800 px-2 py-0.5 text-xs font-normal text-white dark:bg-slate-200 dark:text-slate-900">
+          Filter
+        </button>
+      </th>
+    </tr>
+  );
+}
+
+export function JobTable({ jobs, day, filters }: { jobs: DashboardJob[]; day: string; filters: JobFilters }) {
   return (
     <div>
       <form id={COMPARE_FORM_ID} action="/compare" method="get" className="mb-2">
@@ -91,10 +158,7 @@ export function JobTable({ jobs, day }: { jobs: DashboardJob[]; day: string }) {
           Compare selected (max {MAX_COMPARE_JOBS})
         </button>
       </form>
-      {jobs.length === 0 ? (
-        <p className="py-6 text-sm">No jobs match for this day and filters.</p>
-      ) : (
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-slate-300 text-xs dark:border-slate-700">
@@ -108,6 +172,7 @@ export function JobTable({ jobs, day }: { jobs: DashboardJob[]; day: string }) {
                 <th className="pr-3">Priority</th>
                 <th>Status</th>
               </tr>
+              <FilterRow filters={filters} />
             </thead>
             <tbody>
               {jobs.map((job) => (
@@ -115,8 +180,8 @@ export function JobTable({ jobs, day }: { jobs: DashboardJob[]; day: string }) {
               ))}
             </tbody>
           </table>
+          {jobs.length === 0 && <p className="py-6 text-sm">No jobs match for this day and filters.</p>}
         </div>
-      )}
     </div>
   );
 }

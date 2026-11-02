@@ -44,6 +44,7 @@ export class DashboardService {
       minPriority: filters.minPriority,
       search: filters.search,
       sortKey: filters.sortKey,
+      direction: filters.direction,
       page: filters.page,
     };
     const totalCount = jobQueries.count(baseQuery);

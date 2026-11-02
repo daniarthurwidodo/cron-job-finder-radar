@@ -128,7 +128,7 @@ Tax tables carry their tax year and must be verified against official sources. A
 ### 5.5 Dashboard
 | ID | Requirement | Priority |
 | :--- | :--- | :--- |
-| D1 | Table view with filter by country, stack, seniority, status, and sort by savings, match score, priority. **50 jobs per page** with Previous / Next and "Page X of Y"; filters and sort are kept when changing page | P0 |
+| D1 | Table view with filter by country, stack, seniority, status, and sort by savings, match score, priority or newest, in ascending or descending order (default descending; jobs without a salary always sort last). **Column filters sit in the table header** (title/company search, country, work mode, level, salary disclosed/not, minimum net savings in IDR, minimum stack %, minimum priority, status); a minimum on net savings hides jobs with no salary. **50 jobs per page** with Previous / Next and "Page X of Y"; filters and sort are kept when changing page | P0 |
 | D2 | Search by title or company | P0 |
 | D3 | Status pipeline: Discovered, Bookmarked, Applied, Interviewing, Offer, Rejected, Archived; status can be changed per job | P0 |
 | D4 | Compare up to 4 jobs side by side: gross and net salary (IDR), monthly savings, stack overlap %, work mode, visa sponsorship | P1 |

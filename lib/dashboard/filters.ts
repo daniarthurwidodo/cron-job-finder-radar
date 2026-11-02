@@ -1,5 +1,6 @@
 import {
   COUNTRY_CODES,
+  DEFAULT_SORT_DIRECTION,
   DEFAULT_SORT_KEY,
   FIRST_PAGE,
   ISO_DATE_PATTERN,
@@ -9,6 +10,7 @@ import {
   SEARCH_MAX_LENGTH,
   SENIORITIES,
   SALARY_FILTER,
+  SORT_DIRECTIONS,
   SORT_KEYS,
   WORK_MODES,
 } from "@/lib/constants";
@@ -27,6 +29,7 @@ export interface JobFilters {
   minPriority?: number;
   search?: string;
   sortKey: string;
+  direction: string;
   page: number;
 }
 
@@ -54,6 +57,7 @@ export function parseJobFilters(raw: RawSearchParams): JobFilters {
     minPriority: parseMinimum({ value: firstValue(raw.minPriority), max: PERCENT_MAX }),
     search: firstValue(raw.q)?.slice(0, SEARCH_MAX_LENGTH),
     sortKey: allowedOrUndefined({ value: firstValue(raw.sort), allowed: Object.values(SORT_KEYS) }) ?? DEFAULT_SORT_KEY,
+    direction: allowedOrUndefined({ value: firstValue(raw.dir), allowed: Object.values(SORT_DIRECTIONS) }) ?? DEFAULT_SORT_DIRECTION,
     page: parsePage(firstValue(raw.page)),
   };
 }
@@ -86,6 +90,7 @@ export function buildFilterQuery({ filters, page }: { filters: JobFilters; page:
     ["day", filters.day],
   ];
   for (const [key, value] of entries) if (value) params.set(key, value);
+  if (filters.direction !== DEFAULT_SORT_DIRECTION) params.set("dir", filters.direction);
   if (page > FIRST_PAGE) params.set("page", String(page));
   return params.toString();
 }

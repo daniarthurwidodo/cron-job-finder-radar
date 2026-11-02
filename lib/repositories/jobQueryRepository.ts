@@ -1,5 +1,5 @@
 import type Database from "better-sqlite3";
-import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SALARY_FILTER, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
+import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SALARY_FILTER, SORT_DIRECTIONS, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
 
 export interface DashboardJob {
   id: number;
@@ -40,6 +40,7 @@ export interface JobListQuery {
   minPriority?: number;
   search?: string;
   sortKey: string;
+  direction: string;
   page: number;
 }
 
@@ -63,18 +64,25 @@ const SELECT_DASHBOARD_JOB_SQL = `
          (SELECT group_concat(t.tech_tag, ', ') FROM job_tech_tags t WHERE t.job_id = j.id) AS techTags
   ${FROM_DASHBOARD_JOB_SQL}`;
 
-const SORT_SQL: Record<string, string> = {
-  [SORT_KEYS.PRIORITY]: "j.priority_score DESC",
-  [SORT_KEYS.SAVINGS]: "j.est_net_savings_monthly_idr IS NULL, j.est_net_savings_monthly_idr DESC",
-  [SORT_KEYS.STACK]: "j.stack_match_score DESC",
-  [SORT_KEYS.NEWEST]: "j.created_at DESC",
+const SORT_COLUMNS: Record<string, string> = {
+  [SORT_KEYS.PRIORITY]: "j.priority_score",
+  [SORT_KEYS.SAVINGS]: "j.est_net_savings_monthly_idr",
+  [SORT_KEYS.STACK]: "j.stack_match_score",
+  [SORT_KEYS.NEWEST]: "j.created_at",
 };
+
+// Jobs without a value (no salary) always sort last, whichever direction is chosen.
+function buildOrderSql({ sortKey, direction }: { sortKey: string; direction: string }): string {
+  const column = SORT_COLUMNS[sortKey] ?? SORT_COLUMNS[SORT_KEYS.PRIORITY];
+  const sqlDirection = direction === SORT_DIRECTIONS.ASC ? "ASC" : "DESC";
+  return `${column} IS NULL, ${column} ${sqlDirection}, j.id ${sqlDirection}`;
+}
+
 const MINIMUM_FILTERS = [
   { queryKey: "minSavingsIdr", column: "j.est_net_savings_monthly_idr" },
   { queryKey: "minStack", column: "j.stack_match_score" },
   { queryKey: "minPriority", column: "j.priority_score" },
 ] as const;
-const TIE_BREAK_SQL = "j.id DESC";
 const LIKE_ESCAPE_PATTERN = /[\\%_]/g;
 
 function quoteList(values: readonly string[]): string {
@@ -92,7 +100,7 @@ export class JobQueryRepository {
 
   list(query: JobListQuery): DashboardJob[] {
     const { whereSql, params } = this.buildFilter(query);
-    const orderBy = `${SORT_SQL[query.sortKey] ?? SORT_SQL[SORT_KEYS.PRIORITY]}, ${TIE_BREAK_SQL}`;
+    const orderBy = buildOrderSql(query);
     const sql = `${SELECT_DASHBOARD_JOB_SQL} AND ${whereSql} ORDER BY ${orderBy} LIMIT @limit OFFSET @offset`;
     const offset = (query.page - 1) * LIST_PAGE_SIZE;
     return this.db.prepare(sql).all({ ...params, limit: LIST_PAGE_SIZE, offset }) as DashboardJob[];

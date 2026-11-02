@@ -56,6 +56,8 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] Daily scrape activity panel (PRD D8): latest run + per-day history per source (found / new / duplicates / filtered / invalid / error), "New today" list sorted by priority → verify: after a run the panel matches `scrape_runs`; a source with an error shows its message
 - [x] Daily visibility rule (PRD D9): main list = jobs first saved on the latest run day + all tracked-status jobs; older untracked jobs hidden → verify: a job saved yesterday and untouched is absent; the same job after Bookmark is present; a missed run day does not empty the list; jobs from both MyCareersFuture and Michael Page appear under the same rule; one failing source does not hide the others
 - [x] History view by day (PRD D10) → verify: picking yesterday shows only yesterday's new jobs
+- [x] Header column filters (job, country, work mode, level, salary, min savings / stack / priority, status) in one GET form with sort and day → verified: unit tests for each filter and bad input; headless Chrome click-through (203 jobs to 15, values kept, filter row stays visible with no results)
+- [x] Sort direction (ascending / descending) next to Sort; salary-less jobs last in both directions → verified: unit test for both directions and filter parsing; browser check on real data, direction kept across pages
 - [x] Jobs table paginated, 50 per page, filters kept across pages → verify: 103 jobs = 3 pages (50/50/3); page beyond last shows the last page
 - [x] Jobs table: filter (country, stack, seniority, status), sort (savings, score), search → verify: manual check in browser
 - [x] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload

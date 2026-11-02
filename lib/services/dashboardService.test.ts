@@ -136,6 +136,51 @@ test("list is paginated at 50 per page; page is clamped and filters keep working
   assert.ok(third.jobs.every((job) => !firstIds.has(job.id)));
 });
 
+test("ascending and descending order; jobs without a salary stay last both ways", () => {
+  const world = buildWorld();
+  world.exchangeRates.upsert({ currencyCode: "SGD", rateToIdr: SGD_RATE });
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Low Web Developer", salaryMin: 6000 }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "High Web Developer", salaryMin: 12000 }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "c", sourceUrl: "https://x.test/c", title: "None Web Developer", salaryMin: null, salaryMax: null }, day: LATEST_DAY });
+  world.financials.recalculateAll();
+  assert.deepEqual(titles(world, "sort=savings"), ["High Web Developer", "Low Web Developer", "None Web Developer"]);
+  assert.deepEqual(titles(world, "sort=savings&dir=desc"), ["High Web Developer", "Low Web Developer", "None Web Developer"]);
+  assert.deepEqual(titles(world, "sort=savings&dir=asc"), ["Low Web Developer", "High Web Developer", "None Web Developer"]);
+  assert.deepEqual(titles(world, "sort=newest&dir=asc"), ["Low Web Developer", "High Web Developer", "None Web Developer"]);
+  assert.deepEqual(titles(world, "sort=newest"), ["None Web Developer", "High Web Developer", "Low Web Developer"]);
+  assert.equal(parseJobFilters({ dir: "sideways" }).direction, "desc");
+  const ascending = parseJobFilters({ sort: "savings", dir: "asc" });
+  assert.equal(buildFilterQuery({ filters: ascending, page: 2 }), "sort=savings&dir=asc&page=2");
+});
+
+test("column filters: work mode, salary disclosed, and minimum savings / stack / priority", () => {
+  const world = buildWorld();
+  world.exchangeRates.upsert({ currencyCode: "SGD", rateToIdr: SGD_RATE });
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Rich Web Developer", salaryMin: 12000, descriptionHtml: "<p>Hybrid. Node.js TypeScript Angular</p>" }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Poor Web Developer", salaryMin: 6000 }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "c", sourceUrl: "https://x.test/c", title: "Hidden Web Developer", salaryMin: null, salaryMax: null }, day: LATEST_DAY });
+  world.financials.recalculateAll();
+  const sorted = (query: string): string[] => titles(world, `${query}&sort=newest`).sort();
+  assert.deepEqual(sorted("workMode=hybrid"), ["Rich Web Developer"]);
+  assert.deepEqual(sorted("salary=yes"), ["Poor Web Developer", "Rich Web Developer"]);
+  assert.deepEqual(sorted("salary=no"), ["Hidden Web Developer"]);
+  assert.deepEqual(sorted("minSavings=50000000"), ["Rich Web Developer"]);
+  assert.deepEqual(sorted("minStack=20"), ["Rich Web Developer"]);
+  assert.deepEqual(sorted("minPriority=1&minSavings=0"), ["Poor Web Developer", "Rich Web Developer"]);
+  assert.deepEqual(sorted("workMode=hybrid&minSavings=999999999999"), []);
+});
+
+test("minimum filters ignore bad input, clamp percentages and survive pagination links", () => {
+  const filters = parseJobFilters({ minSavings: "-5", minStack: "250", minPriority: "abc", workMode: "bogus", salary: "maybe" });
+  assert.equal(filters.minSavingsIdr, undefined);
+  assert.equal(filters.minStack, 100);
+  assert.equal(filters.minPriority, undefined);
+  assert.equal(filters.workModeCode, undefined);
+  assert.equal(filters.salary, undefined);
+  const kept = parseJobFilters({ workMode: "hybrid", salary: "yes", minSavings: "1000", minStack: "20", minPriority: "5" });
+  assert.equal(buildFilterQuery({ filters: kept, page: 2 }), "workMode=hybrid&salary=yes&minSavings=1000&minStack=20&minPriority=5&sort=priority&page=2");
+});
+
 test("buildFilterQuery keeps filters and only adds page after the first", () => {
   const filters = parseJobFilters({ q: "node", country: "SG", sort: "savings" });
   assert.equal(buildFilterQuery({ filters, page: 1 }), "q=node&country=SG&sort=savings");
@@ -148,8 +193,14 @@ test("parseJobFilters ignores unknown values; parseCompareIds caps at four uniqu
     countryCode: undefined,
     seniorityCode: undefined,
     statusCode: undefined,
+    workModeCode: undefined,
+    salary: undefined,
+    minSavingsIdr: undefined,
+    minStack: undefined,
+    minPriority: undefined,
     search: undefined,
     sortKey: SORT_KEYS.PRIORITY,
+    direction: "desc",
     page: 1,
   });
   assert.deepEqual(parseCompareIds(["1", "2", "2", "x", "-3", "4", "5", "6"]), [1, 2, 4, 5]);

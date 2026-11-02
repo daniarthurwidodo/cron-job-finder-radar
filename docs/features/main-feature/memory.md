@@ -57,6 +57,10 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Phase 8 approved by user. All phases approved or skipped.
 
+- 2026-11-02: Dashboard column filters added in the table header (one shared GET form). Setting a minimum net savings hides jobs without a salary.
+
+- 2026-11-02: Sort direction (asc/desc) added; default desc; jobs without salary always last.
+
 ## Open questions
 - None.
 

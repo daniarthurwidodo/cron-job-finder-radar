@@ -21,7 +21,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </h2>
         <FilterBar filters={filters} days={home.days} />
         <div className="mt-3">
-          <JobTable jobs={home.jobs} day={home.day} />
+          <JobTable jobs={home.jobs} day={home.day} filters={filters} />
         </div>
         <Pagination filters={filters} page={home.page} pageCount={home.pageCount} totalCount={home.totalCount} />
       </section>
