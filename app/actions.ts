@@ -18,6 +18,13 @@ export async function changeJobStatus(formData: FormData): Promise<void> {
   revalidatePath(DASHBOARD_PATH);
 }
 
+export async function changeJobsStatus(formData: FormData): Promise<void> {
+  const jobIds = formData.getAll("bulkIds").map(Number);
+  const statusCode = String(formData.get("statusCode") ?? "");
+  getServices().dashboard.changeStatuses({ jobIds, statusCode });
+  revalidatePath(DASHBOARD_PATH);
+}
+
 export async function saveColBenchmark(formData: FormData): Promise<void> {
   const countryCode = String(formData.get("countryCode") ?? "");
   const monthlyMajor = Number(formData.get("monthlyMajor"));

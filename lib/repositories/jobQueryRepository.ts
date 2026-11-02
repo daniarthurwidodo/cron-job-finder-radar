@@ -171,4 +171,15 @@ export class JobQueryRepository {
       .run(statusCode, jobId);
     return result.changes > 0;
   }
+
+  updateStatuses({ jobIds, statusCode }: { jobIds: number[]; statusCode: string }): number {
+    const placeholders = jobIds.map(() => "?").join(", ");
+    const result = this.db
+      .prepare(
+        `UPDATE jobs SET status_id = (SELECT id FROM job_statuses WHERE code = ?), updated_at = CURRENT_TIMESTAMP
+         WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
+      )
+      .run(statusCode, ...jobIds);
+    return result.changes;
+  }
 }

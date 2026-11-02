@@ -72,6 +72,14 @@ export class DashboardService {
     if (!this.dependencies.jobQueries.updateStatus({ jobId, statusCode })) throw new Error(`Job not found: ${jobId}`);
   }
 
+  changeStatuses({ jobIds, statusCode }: { jobIds: number[]; statusCode: string }): number {
+    if (jobIds.length === 0) throw new Error("Select at least one job");
+    if (jobIds.length > LIST_PAGE_SIZE) throw new Error(`Select at most ${LIST_PAGE_SIZE} jobs`);
+    if (jobIds.some((jobId) => !Number.isInteger(jobId) || jobId <= 0)) throw new Error(`Invalid job ids: ${jobIds.join(", ")}`);
+    if (!Object.values(JOB_STATUSES).includes(statusCode as never)) throw new Error(`Invalid status: ${statusCode}`);
+    return this.dependencies.jobQueries.updateStatuses({ jobIds: [...new Set(jobIds)], statusCode });
+  }
+
   listColBenchmarks(): ColBenchmarkRecord[] {
     return this.dependencies.colBenchmarks.list();
   }

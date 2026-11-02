@@ -222,3 +222,30 @@ test("changeStatus rejects bad input; updating a benchmark recomputes savings", 
   const after = world.dashboard.getCompareJobs([jobId])[0].netSavingsMonthlyIdr ?? 0;
   assert.equal(before - after, 12000000);
 });
+
+function statusOf(world: ReturnType<typeof buildWorld>, jobId: number): string {
+  const row = world.db.prepare("SELECT js.code AS code FROM jobs j JOIN job_statuses js ON js.id = j.status_id WHERE j.id = ?").get(jobId) as { code: string };
+  return row.code;
+}
+
+test("changeStatuses updates every selected job and ignores duplicates and unknown ids", () => {
+  const world = buildWorld();
+  const first = addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Bulk First Web Developer" }, day: LATEST_DAY });
+  const second = addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Bulk Second Web Developer" }, day: LATEST_DAY });
+  const untouched = addJob({ world, job: { sourceJobId: "c", sourceUrl: "https://x.test/c", title: "Bulk Untouched Web Developer" }, day: LATEST_DAY });
+  const updated = world.dashboard.changeStatuses({ jobIds: [first, second, second, 9999], statusCode: JOB_STATUSES.INTERVIEWING });
+  assert.equal(updated, 2);
+  assert.equal(statusOf(world, first), JOB_STATUSES.INTERVIEWING);
+  assert.equal(statusOf(world, second), JOB_STATUSES.INTERVIEWING);
+  assert.notEqual(statusOf(world, untouched), JOB_STATUSES.INTERVIEWING);
+});
+
+test("changeStatuses rejects empty, oversized, invalid ids and unknown status", () => {
+  const world = buildWorld();
+  const jobId = addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a" }, day: LATEST_DAY });
+  assert.throws(() => world.dashboard.changeStatuses({ jobIds: [], statusCode: JOB_STATUSES.INTERVIEWING }));
+  assert.throws(() => world.dashboard.changeStatuses({ jobIds: Array.from({ length: LIST_PAGE_SIZE + 1 }, (_, index) => index + 1), statusCode: JOB_STATUSES.INTERVIEWING }));
+  assert.throws(() => world.dashboard.changeStatuses({ jobIds: [jobId, Number.NaN], statusCode: JOB_STATUSES.INTERVIEWING }));
+  assert.throws(() => world.dashboard.changeStatuses({ jobIds: [jobId], statusCode: "nope" }));
+  assert.notEqual(statusOf(world, jobId), JOB_STATUSES.INTERVIEWING);
+});

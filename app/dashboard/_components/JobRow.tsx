@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { queueJobForApply } from "@/app/actions";
 import { StatusForm } from "@/app/dashboard/_components/StatusForm";
-import { COMPARE_FORM_ID } from "@/lib/constants";
+import { BULK_STATUS_FORM_ID, COMPARE_FORM_ID } from "@/lib/constants";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, SENIORITY_LABELS, WORK_MODE_LABELS } from "@/lib/dashboard/format";
 import type { DashboardJob } from "@/lib/repositories/jobQueryRepository";
 
@@ -11,6 +11,9 @@ export function JobRow({ job, day }: { job: DashboardJob; day: string }) {
   const isNew = job.createdAt.slice(0, DAY_LENGTH) === day;
   return (
     <tr className="border-b border-slate-200 align-top dark:border-slate-800">
+      <td className="py-2 pr-2">
+        <input type="checkbox" name="bulkIds" value={job.id} form={BULK_STATUS_FORM_ID} aria-label={`Select ${job.title} for bulk status`} />
+      </td>
       <td className="py-2 pr-2">
         <input type="checkbox" name="ids" value={job.id} form={COMPARE_FORM_ID} aria-label={`Compare ${job.title}`} />
       </td>
