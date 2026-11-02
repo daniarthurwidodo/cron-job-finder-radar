@@ -50,6 +50,7 @@ export const SALARY_PERIODS = {
 } as const;
 
 export const MONTHS_PER_YEAR = 12;
+export const IMPLAUSIBLE_MONTHLY_SALARY = 100000;
 export const MINOR_UNITS_PER_MAJOR_UNIT = 100;
 export const PERCENT_MAX = 100;
 
@@ -133,3 +134,83 @@ export const MCF_POSITION_LEVEL_SENIORITIES = {
   "Middle Management": SENIORITIES.LEAD,
   "Senior Management": SENIORITIES.LEAD,
 } as const;
+
+export interface TaxBand {
+  upTo: number | null;
+  rate: number;
+}
+
+export const TAX_YEAR_NOTES = {
+  [COUNTRY_CODES.SINGAPORE]: "IRAS resident rates, YA 2024 onwards (applies to YA 2026)",
+  [COUNTRY_CODES.NEW_ZEALAND]: "IRD bands in force from 1 Apr 2025 (2026-27 bands not yet confirmed) + ACC earners' levy 2026-27",
+  [COUNTRY_CODES.MALAYSIA]: "LHDN resident rates, YA 2023-2025 (YA 2026 bands assumed unchanged)",
+} as const;
+
+export const SG_TAX_BANDS: TaxBand[] = [
+  { upTo: 20000, rate: 0 },
+  { upTo: 30000, rate: 0.02 },
+  { upTo: 40000, rate: 0.035 },
+  { upTo: 80000, rate: 0.07 },
+  { upTo: 120000, rate: 0.115 },
+  { upTo: 160000, rate: 0.15 },
+  { upTo: 200000, rate: 0.18 },
+  { upTo: 240000, rate: 0.19 },
+  { upTo: 280000, rate: 0.195 },
+  { upTo: 320000, rate: 0.2 },
+  { upTo: 500000, rate: 0.22 },
+  { upTo: 1000000, rate: 0.23 },
+  { upTo: null, rate: 0.24 },
+];
+
+export const NZ_TAX_BANDS: TaxBand[] = [
+  { upTo: 15600, rate: 0.105 },
+  { upTo: 53500, rate: 0.175 },
+  { upTo: 78100, rate: 0.3 },
+  { upTo: 180000, rate: 0.33 },
+  { upTo: null, rate: 0.39 },
+];
+export const NZ_ACC_LEVY_RATE = 0.0175;
+export const NZ_ACC_MAX_LIABLE_EARNINGS = 156641;
+
+export const MY_TAX_BANDS: TaxBand[] = [
+  { upTo: 5000, rate: 0 },
+  { upTo: 20000, rate: 0.01 },
+  { upTo: 35000, rate: 0.03 },
+  { upTo: 50000, rate: 0.06 },
+  { upTo: 70000, rate: 0.11 },
+  { upTo: 100000, rate: 0.19 },
+  { upTo: 400000, rate: 0.25 },
+  { upTo: 600000, rate: 0.26 },
+  { upTo: 2000000, rate: 0.28 },
+  { upTo: null, rate: 0.3 },
+];
+export const MY_PERSONAL_RELIEF = 9000;
+export const MY_REBATE_AMOUNT = 400;
+export const MY_REBATE_MAX_CHARGEABLE_INCOME = 35000;
+
+export const FX_API_URL = "https://open.er-api.com/v6/latest/USD";
+export const FX_BASE_CURRENCY = "USD";
+export const IDR_CURRENCY_CODE = "IDR";
+export const FX_TARGET_CURRENCIES = ["SGD", "MYR", "NZD", "USD"] as const;
+export const FX_RATE_MICRO_FACTOR = 1_000_000;
+export const FX_REQUEST_TIMEOUT_MS = 15000;
+
+export const PRIORITY_WEIGHTS = {
+  SAVINGS: 40,
+  STACK: 25,
+  COUNTRY: 15,
+  WORK_MODE: 10,
+  EMPLOYER: 10,
+} as const;
+export const SAVINGS_TARGET_IDR = 30_000_000;
+export const COUNTRY_PRIORITY_SCORES: Record<string, number> = {
+  [COUNTRY_CODES.SINGAPORE]: 100,
+  [COUNTRY_CODES.MALAYSIA]: 70,
+  [COUNTRY_CODES.NEW_ZEALAND]: 40,
+};
+export const WORK_MODE_PRIORITY_SCORES: Record<string, number> = {
+  [WORK_MODES.FULL_TIME]: 100,
+  [WORK_MODES.HYBRID]: 70,
+  [WORK_MODES.FLEXIBLE]: 40,
+  [WORK_MODES.ON_SITE]: 0,
+};

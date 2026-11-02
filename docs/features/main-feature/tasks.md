@@ -18,18 +18,23 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`.
 - [x] DedupService (`dedup_hash` + normalized URL) → verify: same job twice = one row, second source added to `job_sources`
 - [x] StackMatchService → verify: known description scores expected %
 - [x] FilterService (exclude junior/intern/on-site/contract) → verify: unit tests
-- [x] Cron: add local `crontab` line calling the endpoint (documented, user installs)
+- [x] Scheduling: systemd user timer + installer in `deploy/` (replaces cron, CachyOS) → user runs `deploy/install-systemd.sh` on the CachyOS machine
 - [x] First scraper: mycareersfuture.gov.sg → verify: run returns jobs, saved, rerun adds 0 duplicates
 - [x] `/api/cron/scrape` with bearer auth → verify: 401 without token, 200 with, `scrape_runs` row written
 - [ ] Checkpoint: approve Phase 1 (waiting for user review)
 
 ## Phase 2 — Financial engine
-- [ ] FX fetcher + `exchange_rates` cache with stale fallback → verify: offline run uses cached rate
-- [ ] Verify current tax year rates from official sources, then tax profiles SG, NZ, MY as pure functions (tax year in constants) → verify: tests against official worked examples
-- [ ] Research current CoL data for SG, KL, Auckland (cite source + date) and seed `col_benchmarks` → verify: sources recorded; change a benchmark, savings recomputed
-- [ ] FinancialService computes `est_*_idr` on ingest, NULL if no salary → verify: unit tests incl. missing salary
-- [ ] Priority score (savings, stack, work mode, SG > MY > NZ, MNC) → verify: ordering test
-- [ ] Checkpoint: approve Phase 2
+- [x] FX fetcher + `exchange_rates` cache with stale fallback → verify: offline run uses cached rate
+- [x] Verify current tax year rates from official sources, then tax profiles SG, NZ, MY as pure functions (tax year in constants) → verify: tests against official worked examples
+- [x] Research current CoL data for SG, KL, Auckland (cite source + date) and seed `col_benchmarks` → verify: sources recorded; change a benchmark, savings recomputed
+- [x] FinancialService computes `est_*_idr` on ingest, NULL if no salary → verify: unit tests incl. missing salary
+- [x] Priority score (savings, stack, work mode, SG > MY > NZ, MNC) → verify: ordering test
+- [ ] Checkpoint: approve Phase 2 (waiting for user review)
+
+## Cross-cutting — CachyOS / Arch
+- [x] Linux compatibility review: import case, paths, engines, systemd timer, install steps in tech doc section 11a
+- [ ] First install on CachyOS: `npm ci && npm run build && deploy/install-systemd.sh` → verify: `systemctl --user list-timers radar-scrape.timer` shows next run; `npm test` passes there
+- [ ] Phase 3 headless browser uses system Chromium on Arch (`executablePath`)
 
 ## Phase 3 — More scrapers
 - [ ] Add headless browser (Playwright) for sources with no public API or JS-rendered pages → verify: one JS-rendered page scraped headless

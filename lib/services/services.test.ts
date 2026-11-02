@@ -57,6 +57,7 @@ test("stripHtml removes tags and decodes entities", () => {
 test("toMonthlyMinor converts monthly and annual salary to cents", () => {
   assert.equal(toMonthlyMinor({ amount: 8000, period: SALARY_PERIODS.MONTHLY }), 800000);
   assert.equal(toMonthlyMinor({ amount: 120000, period: SALARY_PERIODS.ANNUAL }), 1000000);
+  assert.equal(toMonthlyMinor({ amount: 240000, period: SALARY_PERIODS.MONTHLY }), 2000000);
   assert.equal(toMonthlyMinor({ amount: null, period: SALARY_PERIODS.MONTHLY }), null);
   assert.equal(toMonthlyMinor({ amount: Number.NaN, period: SALARY_PERIODS.MONTHLY }), null);
   assert.equal(toMonthlyMinor({ amount: 5, period: null }), null);
@@ -119,6 +120,13 @@ test("same job from another source adds a source link, not a new job", () => {
   const jobId = jobs.findIdByDedupHash(buildDedupHash({ companyName: "Acme Pte. Ltd.", title: "Senior Node.js Developer", city: "Singapore" }));
   assert.ok(jobId);
   assert.equal(jobSources.countByJobId(jobId), 2);
+});
+
+test("a job with no posted salary is kept, not filtered", () => {
+  const { service, jobs } = buildIngestService();
+  const counts = service.ingest([buildRawJob({ salaryMin: null, salaryMax: null, salaryPeriod: null })]);
+  assert.deepEqual(counts, { found: 1, inserted: 1, duplicates: 0, filtered: 0, invalid: 0 });
+  assert.equal(jobs.listFinancialInputs()[0].salaryMinMonthlyMinor, null);
 });
 
 test("ingest filters and flags invalid jobs", () => {

@@ -4,6 +4,11 @@ import { CompanyRepository } from "@/lib/repositories/companyRepository";
 import { JobRepository } from "@/lib/repositories/jobRepository";
 import { JobSourceRepository } from "@/lib/repositories/jobSourceRepository";
 import { ScrapeRunRepository, type ScrapeRunCounts } from "@/lib/repositories/scrapeRunRepository";
+import { ColBenchmarkRepository } from "@/lib/repositories/colBenchmarkRepository";
+import { ExchangeRateRepository } from "@/lib/repositories/exchangeRateRepository";
+import { fetchRatesToIdr } from "@/lib/fx/exchangeRateClient";
+import { ExchangeRateService } from "@/lib/services/exchangeRateService";
+import { FinancialService } from "@/lib/services/financialService";
 import { mycareersfutureScraper } from "@/lib/scrapers/mycareersfuture";
 import { IngestService } from "@/lib/services/ingestService";
 import type { Scraper } from "@/lib/types";
@@ -50,9 +55,18 @@ export async function runDailyScrape(): Promise<ScrapeSummary[]> {
     runInTransaction: (work) => db.transaction(work)(),
   });
   const scrapeRuns = new ScrapeRunRepository(db);
+  const exchangeRates = new ExchangeRateRepository(db);
+  const financialService = new FinancialService({
+    jobs: new JobRepository(db),
+    exchangeRates,
+    colBenchmarks: new ColBenchmarkRepository(db),
+    runInTransaction: (work) => db.transaction(work)(),
+  });
+  await new ExchangeRateService(exchangeRates, fetchRatesToIdr).refresh();
   const summaries: ScrapeSummary[] = [];
   for (const scraper of SCRAPERS) {
     summaries.push(await runScraper({ scraper, ingestService, scrapeRuns }));
   }
+  financialService.recalculateAll();
   return summaries;
 }

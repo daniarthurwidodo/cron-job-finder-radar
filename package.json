@@ -26,5 +26,8 @@
     "eslint-config-next": "16.4.3",
     "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }

@@ -29,6 +29,12 @@ Short, durable facts and decisions. Append new ones with date.
 - 2026-11-02: Phase 1 done. First live MCF run: 1767 found, 737 saved, rerun saved 0 new. Seniority "entry", contract/temporary, on-site-only and zero stack match are filtered.
 - 2026-11-02: Part-time roles are not filtered (only contract/temporary/internship). Unknown seniority defaults to mid. Work mode inferred from description (MCF has no field).
 
+- 2026-11-02: Missing salary is OK. Never filter on it; priority score ignores the savings weight when salary is unknown.
+
+- 2026-11-02: Runs on CachyOS (Arch). Scheduling = systemd user timer (`deploy/`), Persistent=true. Playwright must use system Chromium. Linux install untested until first run there.
+- 2026-11-02: Phase 2 done. Savings = (min monthly gross - tax - CoL) x FX. SG no CPF (EP holder), MY resident bands + RM9,000 relief + RM400 rebate, NZ 2025-26 bands + 2026-27 ACC (2026-27 bands unconfirmed). CoL defaults are rough, from conflicting sources, editable. Priority weights: savings 40, stack 25, country 15, work mode 10, employer 10.
+- 2026-11-02: Monthly salary above 100,000 is treated as annual (employer data-entry error). Rows saved before this rule keep their old salary until the DB is rebuilt.
+
 ## Open questions
 - None.
 

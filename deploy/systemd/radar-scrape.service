@@ -1,0 +1,9 @@
+[Unit]
+Description=Expat Job Radar daily scrape
+After=radar-web.service
+Wants=radar-web.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=@REPO_DIR@/.env.local
+ExecStart=/usr/bin/curl --fail --silent --show-error --max-time 900 --retry 5 --retry-connrefused --retry-delay 10 -H "Authorization: Bearer ${CRON_SECRET}" http://127.0.0.1:3000/api/cron/scrape

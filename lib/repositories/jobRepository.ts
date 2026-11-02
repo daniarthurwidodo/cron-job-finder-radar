@@ -44,6 +44,49 @@ const INSERT_JOB_SQL = `
     @salaryMinMonthlyMinor, @salaryMaxMonthlyMinor, @stackMatchScore
   )`;
 
+export interface FinancialInput {
+  id: number;
+  countryCode: string;
+  currencyCode: string;
+  workModeCode: string;
+  stackMatchScore: number;
+  salaryMinMonthlyMinor: number | null;
+  isMncOrAccredited: boolean;
+}
+
+export interface FinancialUpdate {
+  jobId: number;
+  grossMonthlyIdr: number | null;
+  taxMonthlyIdr: number | null;
+  colMonthlyIdr: number | null;
+  netSavingsMonthlyIdr: number | null;
+  priorityScore: number;
+}
+
+export interface JobFinancials {
+  grossMonthlyIdr: number | null;
+  taxMonthlyIdr: number | null;
+  colMonthlyIdr: number | null;
+  netSavingsMonthlyIdr: number | null;
+  priorityScore: number;
+}
+
+const SELECT_FINANCIAL_INPUTS_SQL = `
+  SELECT j.id, c.code AS countryCode, j.currency_code AS currencyCode, w.code AS workModeCode,
+         j.stack_match_score AS stackMatchScore, j.salary_min_monthly_minor AS salaryMinMonthlyMinor,
+         (co.is_mnc = 1 OR co.is_accredited = 1) AS isMncOrAccredited
+  FROM jobs j
+  JOIN countries c ON c.id = j.country_id
+  JOIN work_modes w ON w.id = j.work_mode_id
+  JOIN companies co ON co.id = j.company_id
+  WHERE j.deleted_at IS NULL`;
+
+const UPDATE_FINANCIALS_SQL = `
+  UPDATE jobs SET est_gross_monthly_idr = @grossMonthlyIdr, est_tax_monthly_idr = @taxMonthlyIdr,
+    est_col_monthly_idr = @colMonthlyIdr, est_net_savings_monthly_idr = @netSavingsMonthlyIdr,
+    priority_score = @priorityScore, updated_at = CURRENT_TIMESTAMP
+  WHERE id = @jobId`;
+
 const SELECT_JOB_BY_ID_SQL = `
   SELECT j.id, j.title, j.city, c.code AS countryCode, w.code AS workModeCode, s.code AS seniorityCode,
          st.code AS statusCode, j.stack_match_score AS stackMatchScore, j.dedup_hash AS dedupHash
@@ -74,6 +117,27 @@ export class JobRepository {
     const jobId = Number(result.lastInsertRowid);
     this.insertTechTags({ jobId, techTags });
     return jobId;
+  }
+
+  listFinancialInputs(): FinancialInput[] {
+    const rows = this.db.prepare(SELECT_FINANCIAL_INPUTS_SQL).all() as (Omit<FinancialInput, "isMncOrAccredited"> & {
+      isMncOrAccredited: number;
+    })[];
+    return rows.map((row) => ({ ...row, isMncOrAccredited: row.isMncOrAccredited === 1 }));
+  }
+
+  updateFinancials(update: FinancialUpdate): void {
+    this.db.prepare(UPDATE_FINANCIALS_SQL).run(update);
+  }
+
+  findFinancials(jobId: number): JobFinancials | undefined {
+    return this.db
+      .prepare(
+        `SELECT est_gross_monthly_idr AS grossMonthlyIdr, est_tax_monthly_idr AS taxMonthlyIdr,
+                est_col_monthly_idr AS colMonthlyIdr, est_net_savings_monthly_idr AS netSavingsMonthlyIdr,
+                priority_score AS priorityScore FROM jobs WHERE id = ?`,
+      )
+      .get(jobId) as JobFinancials | undefined;
   }
 
   listTechTags(jobId: number): string[] {

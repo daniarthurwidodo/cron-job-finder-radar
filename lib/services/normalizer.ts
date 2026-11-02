@@ -4,6 +4,7 @@ import {
   ENTRY_TITLE_PATTERN,
   FLEXIBLE_PATTERN,
   HYBRID_PATTERN,
+  IMPLAUSIBLE_MONTHLY_SALARY,
   LEAD_TITLE_PATTERN,
   MCF_POSITION_LEVEL_SENIORITIES,
   MINOR_UNITS_PER_MAJOR_UNIT,
@@ -38,10 +39,12 @@ export function stripHtml(html: string): string {
     .trim();
 }
 
+// Employers sometimes enter an annual figure under "Monthly"; a monthly value this large is treated as annual.
 export function toMonthlyMinor({ amount, period }: { amount: number | null; period: SalaryPeriod | null }): number | null {
   if (amount === null || period === null) return null;
   if (!Number.isFinite(amount) || amount <= 0) return null;
-  const monthlyAmount = period === SALARY_PERIODS.ANNUAL ? amount / MONTHS_PER_YEAR : amount;
+  const isAnnual = period === SALARY_PERIODS.ANNUAL || amount > IMPLAUSIBLE_MONTHLY_SALARY;
+  const monthlyAmount = isAnnual ? amount / MONTHS_PER_YEAR : amount;
   return Math.round(monthlyAmount * MINOR_UNITS_PER_MAJOR_UNIT);
 }
 

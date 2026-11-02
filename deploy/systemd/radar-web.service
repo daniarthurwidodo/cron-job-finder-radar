@@ -1,0 +1,14 @@
+[Unit]
+Description=Expat Job Radar web app (localhost only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=@REPO_DIR@
+EnvironmentFile=@REPO_DIR@/.env.local
+ExecStart=@NPM_BIN@ start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

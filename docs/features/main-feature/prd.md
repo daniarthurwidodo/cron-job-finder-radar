@@ -103,7 +103,7 @@ LinkedIn requires login. Automated scraping with a personal account risks a ban 
 | M2 | Monthly tax is estimated per country: Singapore (IRAS resident rates), New Zealand (PAYE + ACC levy), Malaysia (resident rates) | P0 |
 | M3 | A monthly cost-of-living benchmark per city (rent, utilities, food) is applied and editable in settings | P0 |
 | M4 | Daily exchange rates SGD, NZD, MYR, USD to IDR are fetched and cached; last known rate is used if fetch fails | P0 |
-| M5 | Jobs without a posted salary are still listed, marked "no salary", and have no savings value | P0 |
+| M5 | **Missing salary is acceptable.** Most postings do not show salary, so a job without a posted salary is never filtered out. It is listed marked "salary not disclosed", has no savings value, and is ranked without the savings part of the priority score (not as zero savings). Sorting by savings puts these jobs last | P0 |
 | M6 | Work-pass eligibility hints (e.g. Singapore EP/COMPASS salary threshold) are shown as flags | P2 |
 
 **Formula**

@@ -88,7 +88,7 @@ All money stored as integer minor units (cents). FX rates as integer micro-rate 
 net_savings_idr = ((gross_monthly - monthly_tax) - base_col) * rate_to_idr
 ```
 
-- Salary normalization: annual -> monthly (/12), hourly/daily rejected unless convertible; missing salary -> savings = NULL, job still listed, flagged "no salary".
+- Salary normalization: annual -> monthly (/12), hourly/daily rejected unless convertible; missing salary is normal (most postings hide it): job is never filtered for it, savings = NULL, flagged "salary not disclosed", priority score drops the savings weight instead of scoring it as zero, savings sort puts NULL last.
 - Use `salary_min` for a conservative figure, show min–max range in UI.
 - **Tax profiles** (pure functions, one per country, bracket tables in constants, tax year noted):
   - SG: resident progressive rates (IRAS). EP/COMPASS threshold checked as eligibility flag.
@@ -162,10 +162,20 @@ Migrations: numbered `.sql` files with matching `down`, run by a small runner sc
 - Google OAuth tokens stored server-side only. Dashboard has no login (decided), so it must bind to localhost only and never be exposed to a network.
 - All SQL parameterized, named columns, no `SELECT *`.
 
+## 11a. Platform: CachyOS / Arch Linux
+
+Target runtime is CachyOS (Arch-based, systemd). Dev happens on macOS, so these are the differences to respect:
+- Install: `sudo pacman -S --needed nodejs npm base-devel python curl git`, then `npm ci`. `better-sqlite3` ships prebuilt Linux x64 (glibc) binaries; `base-devel` + `python` are only needed if npm falls back to compiling it. Node must be >= 20.9 (`engines` in package.json); Arch `nodejs` is current.
+- File system is case-sensitive: every `@/...` import was checked against exact on-disk filename case (0 mismatches). Keep camelCase file names and matching imports.
+- No cron on Arch by default: use the systemd timer in `deploy/`. For it to run while logged out: `sudo loginctl enable-linger $USER`. If npm comes from nvm/fnm, `command -v npm` at install time is baked into the unit.
+- Paths: code uses `path.join` + `process.cwd()` (no hard-coded separators). DB is `data/app.db`; the service sets `WorkingDirectory` to the repo, so the path is correct.
+- Headless browser (Phase 3): Playwright's bundled browsers are built for Ubuntu/Debian and are unsupported on Arch. Plan: install system Chromium (`sudo pacman -S chromium`) and launch Playwright with `executablePath: /usr/bin/chromium`, instead of `npx playwright install`.
+- Status: the unit files and installer were written on macOS and are not yet run on CachyOS (only `bash -n` syntax-checked). First run there is the real test.
+
 ## 12. Decisions and Open Questions
 
 Decided: plain SQL repositories for now (no ORM, revisit if queries get repetitive), Tailwind for UI, LinkedIn scraped (last), contract roles excluded, runs on local machine with system `cron`, no dashboard login, CV work-authorization wording per country, CoL defaults proposed from current public data, no salary threshold yet.
 
-Local cron example (user installs with `crontab -e`; secret value from `.env.local`): `0 0 * * * curl -s -m 600 -H "Authorization: Bearer <CRON_SECRET>" http://127.0.0.1:3000/api/cron/scrape`. Run with `npm start` after `npm run build`. (needs the app running; the machine must be on at run time, otherwise missed runs are not retried).
+Scheduling on CachyOS / Arch (systemd user timer, replaces cron): `deploy/install-systemd.sh` installs `radar-web.service` (runs `npm start` on 127.0.0.1:3000) and `radar-scrape.timer` (daily 00:00 UTC, `Persistent=true` so a run missed while the machine was off or asleep is executed at next boot/wake). The scrape service calls the endpoint with `CRON_SECRET` read from `.env.local`.
 
 Open: none.
