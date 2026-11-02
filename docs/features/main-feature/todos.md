@@ -13,7 +13,9 @@ Last updated: 2026-11-02. Open items that are not part of the normal phase check
 | Workhere | NZ | **Site down** | Home page: "Workhere is building something - and we'll return early 2027" | Re-check after early 2027. Use Trade Me meanwhile |
 | LinkedIn | all | **Waiting on user** | No `LINKEDIN_EMAIL` / `LINKEDIN_PASSWORD` in `.env.local`. Tool never creates accounts or types passwords. ToS and ban risk accepted by user | User puts credentials in `.env.local`; then build Phase 3 LinkedIn scraper (last, behind on/off setting). Stop if a verification/CAPTCHA appears |
 
-Reachable (no block seen), not yet built: Michael Page SG (in progress), Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
+Built and verified live: MyCareersFuture (API), Michael Page SG (headless browser: 194 found, 31 saved on first run, most filtered for no stack keyword because list summaries are short).
+
+Reachable (no block seen), not yet built: Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
 
 ## Policy for bot checks
 Scrapers use plain headless Chrome with default identity. If a page shows a bot check, CAPTCHA, or "automation detected" page, the scraper stops with `BotChallengeError`, records it in `scrape_runs.error_message`, and the source is listed above. No stealth plugins, UA spoofing, proxy rotation, or CAPTCHA solving.

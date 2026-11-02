@@ -131,6 +131,8 @@ Conventions per R19: snake_case, plural tables, `INTEGER PRIMARY KEY AUTOINCREME
 
 Migrations: numbered `.sql` files with matching `down`, run by a small runner script on startup/`npm run migrate`. Logical FK relationships documented in migration comments. Delete of a job = soft delete; child cleanup done in service.
 
+Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-source rows from `scrape_runs` (`started_at`, counts, `error_message`), "new today" = jobs whose `created_at` is on/after the latest successful run start, joined to companies/countries, ordered by `priority_score DESC`. Read goes through a service (presentation never calls repositories).
+
 ## 9. Deviations from PRD (and why)
 
 | PRD | Here | Reason |

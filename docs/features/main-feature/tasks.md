@@ -37,17 +37,20 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] Phase 3 headless browser uses system Chromium on Arch (`executablePath`)
 
 ## Phase 3 — More scrapers
-- [ ] Add headless browser (Playwright) for sources with no public API or JS-rendered pages → verify: one JS-rendered page scraped headless
+- [x] Add headless browser (`playwright-core` + system Chrome/Chromium, stops on bot checks) → verified on Michael Page SG
 - [ ] hiredly, trademe → verify: each logs found/inserted counts
 - [ ] jobstreet SG/MY, seek NZ, workhere, robert walters → BLOCKED, see `todos.md`
 - [ ] Relocate.me, Tech in Asia Jobs → verify: same
-- [ ] Agencies: Randstad, Michael Page, Robert Walters, Hays, Monroe → verify: same
+- [x] Michael Page SG → verified live (194 found, 31 saved)
+- [ ] Agencies: Randstad, Hays, Monroe → verify: same
+- [ ] Robert Walters → BLOCKED (bot check), see `todos.md`
 - [ ] LinkedIn: logged-in scraper, creds/session in `.env.local`, on/off setting → verify: failure does not affect other sources
 - [ ] MNC / accredited employer flag on companies → verify: flagged list editable
 - [ ] Checkpoint: approve Phase 3
 
 ## Phase 4 — Dashboard
 - [ ] Install Tailwind CSS → verify: utility class renders on a page
+- [ ] Daily scrape activity panel (PRD D8): latest run + per-day history per source (found / new / duplicates / filtered / invalid / error), "New today" list sorted by priority → verify: after a run the panel matches `scrape_runs`; a source with an error shows its message
 - [ ] Jobs table: filter (country, stack, seniority, status), sort (savings, score), search → verify: manual check in browser
 - [ ] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload
 - [ ] Compare modal, up to 4 jobs (gross/net IDR, savings, stack overlap, work mode, visa) → verify: manual check

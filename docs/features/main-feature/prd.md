@@ -124,6 +124,7 @@ Tax tables carry their tax year and must be verified against official sources. A
 | D5 | Kanban view of the pipeline | P2 |
 | D6 | Settings page for CoL benchmarks | P1 |
 | D7 | Charts of salary and savings breakdown | P2 |
+| D8 | **Daily scrape activity panel** on the dashboard home: for the latest run and a per-day history, show for each source the time, jobs found, new jobs saved, duplicates, filtered, invalid, and any error (including "blocked by bot check"). Also a "New today" list of the jobs first saved in the latest run, sorted by priority score. Failed or blocked sources are visible, not hidden | P0 |
 
 ### 5.6 Google Calendar
 | ID | Requirement | Priority |
