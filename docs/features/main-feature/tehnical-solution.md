@@ -62,6 +62,8 @@ Risks:
 - Scraping may break on markup changes; each scraper isolated, logs counts per run.
 - Respect robots.txt and rate limit (constant delay between requests).
 
+Browser engine: sources with a public API (MyCareersFuture) use plain `fetch`. Sources with no API or JS-rendered pages (LinkedIn, SEEK, JobStreet and similar) run in a headless browser (Playwright, added in Phase 3 when the first such scraper is built). Logins (LinkedIn) happen inside the headless session using credentials from `.env.local`; accounts are created and passwords chosen by the user, never by the tool.
+
 ## 5. Dedup ("make sure job post is unique")
 
 Two keys:
@@ -155,6 +157,7 @@ Migrations: numbered `.sql` files with matching `down`, run by a small runner sc
 ## 11. Security
 
 - `/api/cron/scrape` rejects without `Authorization: Bearer $CRON_SECRET` (constant-time compare).
+- `npm run dev` and `npm start` bind to 127.0.0.1 only (no dashboard login, so no network exposure).
 - Secrets only in `.env.local` (git-ignored): `CRON_SECRET`, Google OAuth client id/secret, LLM key.
 - Google OAuth tokens stored server-side only. Dashboard has no login (decided), so it must bind to localhost only and never be exposed to a network.
 - All SQL parameterized, named columns, no `SELECT *`.
@@ -163,6 +166,6 @@ Migrations: numbered `.sql` files with matching `down`, run by a small runner sc
 
 Decided: plain SQL repositories for now (no ORM, revisit if queries get repetitive), Tailwind for UI, LinkedIn scraped (last), contract roles excluded, runs on local machine with system `cron`, no dashboard login, CV work-authorization wording per country, CoL defaults proposed from current public data, no salary threshold yet.
 
-Local cron example: `0 0 * * * curl -s -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/scrape` (needs the app running; the machine must be on at run time, otherwise missed runs are not retried).
+Local cron example (user installs with `crontab -e`; secret value from `.env.local`): `0 0 * * * curl -s -m 600 -H "Authorization: Bearer <CRON_SECRET>" http://127.0.0.1:3000/api/cron/scrape`. Run with `npm start` after `npm run build`. (needs the app running; the machine must be on at run time, otherwise missed runs are not retried).
 
 Open: none.

@@ -24,6 +24,11 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Reference CV is Markdown at `data/reference-cv.md` (git-ignored), converted from the docx.
 
+- 2026-11-02: Scrapers without a public API run in a headless browser (Playwright, Phase 3). MCF uses plain fetch.
+- 2026-11-02: Tool never creates accounts or enters passwords; user registers sites and puts credentials in `.env.local`.
+- 2026-11-02: Phase 1 done. First live MCF run: 1767 found, 737 saved, rerun saved 0 new. Seniority "entry", contract/temporary, on-site-only and zero stack match are filtered.
+- 2026-11-02: Part-time roles are not filtered (only contract/temporary/internship). Unknown seniority defaults to mid. Work mode inferred from description (MCF has no field).
+
 ## Open questions
 - None.
 
