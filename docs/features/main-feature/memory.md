@@ -22,10 +22,10 @@ Short, durable facts and decisions. Append new ones with date.
 - 2026-11-02: CV work-authorization wording is a per-country setting. CoL defaults researched from current public data in Phase 2. No salary threshold yet.
 - 2026-11-02: Plain SQL repositories, no ORM for now.
 
-- 2026-11-02: Reference CV is a PDF, proposed path `data/reference-cv.pdf` (git-ignored).
+- 2026-11-02: Reference CV is Markdown at `data/reference-cv.md` (git-ignored), converted from the docx.
 
 ## Open questions
-- None blocking. Confirm CV path before Phase 6.
+- None.
 
 ## Doc files
 - `prd.md` requirements and decisions, `tehnical-solution.md` design, `tasks.md` phased checklist.

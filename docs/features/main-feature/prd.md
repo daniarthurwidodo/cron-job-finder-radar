@@ -199,7 +199,7 @@ Each phase ends with a review checkpoint. Task-level breakdown: `tasks.md`.
 | CV work authorization wording | Per country (setting per SG / MY / NZ) |
 | Cost-of-living benchmarks | Propose defaults from current public data (researched in Phase 2, shown with source and date, editable) |
 | Minimum salary / savings threshold | None for now; add later if the list is too noisy |
-| Reference CV format | PDF. Proposed location `data/reference-cv.pdf` (git-ignored, contains personal data) |
+| Reference CV format | Markdown, converted from the Word CV (`docs/Curriculum Vitae Dani Arthur Widodo.docx`). Location `data/reference-cv.md` (git-ignored, contains personal data) |
 
 **Still open**
-None blocking. Confirm the reference CV path before Phase 6.
+None.

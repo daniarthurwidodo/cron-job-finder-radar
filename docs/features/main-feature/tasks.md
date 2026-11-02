@@ -8,7 +8,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`.
 - [x] Add `better-sqlite3` + `lib/db.ts` → verify: query `select sqlite_version()` works
 - [x] Ignore `data/*.db` in git
 - [x] Resolve Open Questions → answers in `prd.md` section 10 and `memory.md`
-- [ ] Confirm reference CV path `data/reference-cv.pdf` (needed before Phase 6)
+- [x] Reference CV at `data/reference-cv.md` (git-ignored)
 
 ## Phase 1 — Schema and ingestion core
 - [ ] `lib/constants.ts` (statuses, work modes, countries, keyword matrix, limits) → verify: no string/number literals in logic
@@ -55,7 +55,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`.
 - [ ] Checkpoint: approve Phase 5
 
 ## Phase 6 — CV and cover letter
-- [ ] Reference CV PDF placed at `data/reference-cv.pdf`; add to `.gitignore` → verify: text extracts from the PDF
+- [x] Reference CV `data/reference-cv.md` exists and is git-ignored → verify: `git check-ignore` matches
 - [ ] Tailored CV generator, 2-page international format, work-authorization line per country (setting) → verify: PDF is 2 pages
 - [ ] Interest letter generator → verify: uses only facts from reference CV
 - [ ] Store in `documents`, download from job detail → verify: manual check

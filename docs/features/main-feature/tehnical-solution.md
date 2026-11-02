@@ -144,7 +144,7 @@ Migrations: numbered `.sql` files with matching `down`, run by a small runner sc
 
 ## 10. CV and cover letter generation (additional requirement)
 
-- Input: reference CV as PDF at `data/reference-cv.pdf` (proposed path, git-ignored). Text extracted from the PDF at generation time (one small PDF-text library, chosen in Phase 6) and a job row.
+- Input: reference CV as Markdown at `data/reference-cv.md` (git-ignored), read directly, no parser needed. The other input is a job row.
 - Output: per-job tailored CV (2-page international format, states work authorization: "Requires Visa Sponsorship" / "Open to Relocation") and interest letter.
 - Mechanism: LLM call (Claude API) with reference CV + job description; output stored in `documents`, rendered to PDF.
 - Hard rule in prompt: only reorder/emphasize facts present in reference CV, never invent experience.
@@ -163,4 +163,4 @@ Decided: plain SQL repositories for now (no ORM, revisit if queries get repetiti
 
 Local cron example: `0 0 * * * curl -s -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/scrape` (needs the app running; the machine must be on at run time, otherwise missed runs are not retried).
 
-Open: none blocking. Confirm reference CV path before Phase 6.
+Open: none.

@@ -43,3 +43,7 @@ next-env.d.ts
 # sqlite
 /data/*.db
 /data/*.db-*
+
+# personal data
+/data/reference-cv.md
+/data/linkedin-reference.md
