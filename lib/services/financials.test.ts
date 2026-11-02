@@ -61,12 +61,13 @@ function buildWorld() {
 }
 
 test("toRatesToIdr converts USD-based rates to IDR per currency", () => {
-  const rates = toRatesToIdr({ IDR: 16000, SGD: 1.25, MYR: 4, NZD: 1.6 });
+  const rates = toRatesToIdr({ IDR: 16000, SGD: 1.25, MYR: 4, NZD: 1.6, AUD: 1.5 });
   assert.equal(rates.SGD, 12800);
   assert.equal(rates.MYR, 4000);
+  assert.equal(rates.AUD, 10666.666666666666);
   assert.equal(rates.USD, 16000);
   assert.throws(() => toRatesToIdr({ IDR: 16000, SGD: 1.25 }));
-  assert.throws(() => toRatesToIdr({ SGD: 1.25, MYR: 4, NZD: 1.6 }));
+  assert.throws(() => toRatesToIdr({ SGD: 1.25, MYR: 4, NZD: 1.6, AUD: 1.5 }));
 });
 
 test("offline refresh keeps the cached rate", async () => {

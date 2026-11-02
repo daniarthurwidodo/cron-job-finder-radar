@@ -124,9 +124,9 @@ export interface ScrapeNowState {
   message?: string;
 }
 
-export async function runScrapeNow(): Promise<ScrapeNowState> {
+export async function runScrapeNow(_previous: ScrapeNowState, formData: FormData): Promise<ScrapeNowState> {
   try {
-    const summaries = await runDailyScrape();
+    const summaries = await runDailyScrape(formData.getAll("sources").map(String));
     const inserted = summaries.reduce((total, summary) => total + summary.counts.inserted, 0);
     const failedCount = summaries.filter((summary) => summary.errorMessage).length;
     return { message: `${inserted} new job(s) saved, ${failedCount} source(s) with errors.` };

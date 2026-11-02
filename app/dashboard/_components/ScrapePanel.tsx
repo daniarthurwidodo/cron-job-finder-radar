@@ -1,5 +1,6 @@
 import { ScrapeNowForm } from "@/app/dashboard/_components/ScrapeNowForm";
 import { labelOf, SOURCE_LABELS } from "@/lib/dashboard/format";
+import { SCRAPER_SOURCE_CODES } from "@/lib/services/dailyScrape";
 import type { ScrapeRunRow } from "@/lib/repositories/scrapeRunRepository";
 
 const DAY_LENGTH = 10;
@@ -14,7 +15,7 @@ export function ScrapePanel({ runs, newJobsCount, day }: { runs: ScrapeRunRow[];
   return (
     <section className="rounded border border-slate-300 p-4 dark:border-slate-700">
       <h2 className="mb-2 text-lg font-semibold">Daily scrape - {day}</h2>
-      <ScrapeNowForm />
+      <ScrapeNowForm sourceCodes={SCRAPER_SOURCE_CODES} />
       {runs.length === 0 ? (
         <p className="text-sm">No scrape has run yet. Use the button above or wait for the daily timer.</p>
       ) : (

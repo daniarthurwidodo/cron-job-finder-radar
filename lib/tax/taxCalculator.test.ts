@@ -47,3 +47,10 @@ test("rejects unknown country and invalid income", () => {
   assert.throws(() => calculateAnnualTax({ countryCode: "SG", annualGross: Number.NaN }));
   assert.throws(() => calculateAnnualTax({ countryCode: "SG", annualGross: -1 }));
 });
+
+test("AU: resident bands plus 2% Medicare levy (hand-calculated from ATO 2026-27 bands)", () => {
+  assert.equal(round(calculateAnnualTax({ countryCode: "AU", annualGross: 100000 })), round(4020 + 16500 + 2000));
+  assert.equal(round(calculateAnnualTax({ countryCode: "AU", annualGross: 250000 })), round(4020 + 27000 + 20350 + 27000 + 5000));
+  assert.equal(round(calculateAnnualTax({ countryCode: "AU", annualGross: 18200 })), round(18200 * 0.02));
+  assert.equal(calculateAnnualTax({ countryCode: "AU", annualGross: 0 }), 0);
+});

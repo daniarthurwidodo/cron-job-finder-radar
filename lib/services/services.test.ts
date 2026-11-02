@@ -6,6 +6,7 @@ import { migrateUp } from "@/lib/migrations";
 import { CompanyRepository } from "@/lib/repositories/companyRepository";
 import { JobRepository } from "@/lib/repositories/jobRepository";
 import { JobSourceRepository } from "@/lib/repositories/jobSourceRepository";
+import { selectScrapers } from "@/lib/services/dailyScrape";
 import { buildDedupHash, normalizeUrl } from "@/lib/services/dedup";
 import { IngestService } from "@/lib/services/ingestService";
 import { findRejectionReason, isTargetRole } from "@/lib/services/jobFilter";
@@ -147,4 +148,15 @@ test("ingest filters and flags invalid jobs", () => {
     buildRawJob({ sourceJobId: "bad", title: "" }),
   ]);
   assert.deepEqual(counts, { found: 2, inserted: 0, duplicates: 0, filtered: 1, invalid: 1 });
+});
+
+test("selectScrapers runs everything by default, filters by source code, and rejects an empty or unknown selection", () => {
+  const scrapers = [
+    { sourceCode: "a", fetchJobs: async () => [] },
+    { sourceCode: "b", fetchJobs: async () => [] },
+  ];
+  assert.deepEqual(selectScrapers({ scrapers }), scrapers);
+  assert.deepEqual(selectScrapers({ scrapers, sourceCodes: ["b"] }), [scrapers[1]]);
+  assert.throws(() => selectScrapers({ scrapers, sourceCodes: [] }));
+  assert.throws(() => selectScrapers({ scrapers, sourceCodes: ["zzz"] }));
 });

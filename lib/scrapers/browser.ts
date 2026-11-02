@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { chromium, type Browser, type Page } from "playwright-core";
 import {
   BOT_CHALLENGE_TITLE_PATTERN,
@@ -47,12 +48,32 @@ export async function loadPage({ page, url, readySelector }: { page: Page; url: 
 // tsx/esbuild wraps named functions in a `__name` helper that does not exist inside the browser page.
 const NAME_HELPER_SHIM = "window.__name = (target) => target;";
 
+function launchBrowser(): Promise<Browser> {
+  return chromium.launch({ executablePath: resolveBrowserPath(), headless: true });
+}
+
 export async function withBrowserPage<T>(work: (page: Page) => Promise<T>): Promise<T> {
-  const browser: Browser = await chromium.launch({ executablePath: resolveBrowserPath(), headless: true });
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage();
     await page.addInitScript(NAME_HELPER_SHIM);
     return await work(page);
+  } finally {
+    await browser.close();
+  }
+}
+
+// Reuses cookies saved at `sessionPath` and writes them back (owner-only) after `work` succeeds, so logins are not repeated.
+export async function withBrowserSession<T>({ sessionPath, fileMode, work }: { sessionPath: string; fileMode: number; work: (page: Page) => Promise<T> }): Promise<T> {
+  const browser = await launchBrowser();
+  try {
+    const context = await browser.newContext(fs.existsSync(sessionPath) ? { storageState: sessionPath } : {});
+    const page = await context.newPage();
+    await page.addInitScript(NAME_HELPER_SHIM);
+    const result = await work(page);
+    await context.storageState({ path: sessionPath });
+    fs.chmodSync(sessionPath, fileMode);
+    return result;
   } finally {
     await browser.close();
   }

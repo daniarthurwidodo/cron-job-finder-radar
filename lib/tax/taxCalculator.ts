@@ -1,4 +1,6 @@
 import {
+  AU_MEDICARE_LEVY_RATE,
+  AU_TAX_BANDS,
   COUNTRY_CODES,
   MY_PERSONAL_RELIEF,
   MY_REBATE_AMOUNT,
@@ -33,6 +35,10 @@ function calculateNewZealandTax(annualGross: number): number {
   return incomeTax + accLevy;
 }
 
+function calculateAustraliaTax(annualGross: number): number {
+  return progressiveTax({ income: annualGross, bands: AU_TAX_BANDS }) + annualGross * AU_MEDICARE_LEVY_RATE;
+}
+
 function calculateMalaysiaTax(annualGross: number): number {
   const chargeableIncome = Math.max(annualGross - MY_PERSONAL_RELIEF, 0);
   const tax = progressiveTax({ income: chargeableIncome, bands: MY_TAX_BANDS });
@@ -44,6 +50,7 @@ const ANNUAL_TAX_CALCULATORS: Record<string, (annualGross: number) => number> = 
   [COUNTRY_CODES.SINGAPORE]: calculateSingaporeTax,
   [COUNTRY_CODES.NEW_ZEALAND]: calculateNewZealandTax,
   [COUNTRY_CODES.MALAYSIA]: calculateMalaysiaTax,
+  [COUNTRY_CODES.AUSTRALIA]: calculateAustraliaTax,
 };
 
 export function calculateAnnualTax({ countryCode, annualGross }: { countryCode: string; annualGross: number }): number {

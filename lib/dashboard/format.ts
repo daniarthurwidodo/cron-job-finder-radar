@@ -21,6 +21,7 @@ export const COUNTRY_LABELS: Record<string, string> = {
   [COUNTRY_CODES.SINGAPORE]: "Singapore",
   [COUNTRY_CODES.MALAYSIA]: "Malaysia",
   [COUNTRY_CODES.NEW_ZEALAND]: "New Zealand",
+  [COUNTRY_CODES.AUSTRALIA]: "Australia",
 };
 
 export const SENIORITY_LABELS: Record<string, string> = {
@@ -40,6 +41,9 @@ export const SORT_LABELS: Record<string, string> = {
 export const SOURCE_LABELS: Record<string, string> = {
   [SOURCE_CODES.MYCAREERSFUTURE]: "MyCareersFuture",
   [SOURCE_CODES.MICHAEL_PAGE_SG]: "Michael Page SG",
+  [SOURCE_CODES.SEEK_NZ]: "Seek NZ",
+  [SOURCE_CODES.SEEK_AU]: "Seek AU",
+  [SOURCE_CODES.LINKEDIN]: "LinkedIn",
 };
 
 const SALARY_NOT_DISCLOSED = "Salary not disclosed";

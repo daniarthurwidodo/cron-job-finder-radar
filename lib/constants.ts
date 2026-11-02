@@ -2,18 +2,21 @@ export const COUNTRY_CODES = {
   SINGAPORE: "SG",
   MALAYSIA: "MY",
   NEW_ZEALAND: "NZ",
+  AUSTRALIA: "AU",
 } as const;
 
 export const COUNTRY_CURRENCIES = {
   [COUNTRY_CODES.SINGAPORE]: "SGD",
   [COUNTRY_CODES.MALAYSIA]: "MYR",
   [COUNTRY_CODES.NEW_ZEALAND]: "NZD",
+  [COUNTRY_CODES.AUSTRALIA]: "AUD",
 } as const;
 
 export const COUNTRY_PRIMARY_CITIES = {
   [COUNTRY_CODES.SINGAPORE]: "Singapore",
   [COUNTRY_CODES.MALAYSIA]: "Kuala Lumpur",
   [COUNTRY_CODES.NEW_ZEALAND]: "Auckland",
+  [COUNTRY_CODES.AUSTRALIA]: "Sydney",
 } as const;
 
 export const WORK_MODES = {
@@ -43,6 +46,9 @@ export const JOB_STATUSES = {
 export const SOURCE_CODES = {
   MYCAREERSFUTURE: "mycareersfuture",
   MICHAEL_PAGE_SG: "michaelpage_sg",
+  SEEK_NZ: "seek_nz",
+  SEEK_AU: "seek_au",
+  LINKEDIN: "linkedin",
 } as const;
 
 export const SALARY_PERIODS = {
@@ -148,6 +154,7 @@ export const TAX_YEAR_NOTES = {
   [COUNTRY_CODES.SINGAPORE]: "IRAS resident rates, YA 2024 onwards (applies to YA 2026)",
   [COUNTRY_CODES.NEW_ZEALAND]: "IRD bands in force from 1 Apr 2025 (2026-27 bands not yet confirmed) + ACC earners' levy 2026-27",
   [COUNTRY_CODES.MALAYSIA]: "LHDN resident rates, YA 2023-2025 (YA 2026 bands assumed unchanged)",
+  [COUNTRY_CODES.AUSTRALIA]: "ATO resident rates 2026-27 (16% band cut to 15% from 1 Jul 2026) + 2% Medicare levy, low-income reduction ignored",
 } as const;
 
 export const SG_TAX_BANDS: TaxBand[] = [
@@ -176,6 +183,15 @@ export const NZ_TAX_BANDS: TaxBand[] = [
 export const NZ_ACC_LEVY_RATE = 0.0175;
 export const NZ_ACC_MAX_LIABLE_EARNINGS = 156641;
 
+export const AU_TAX_BANDS: TaxBand[] = [
+  { upTo: 18200, rate: 0 },
+  { upTo: 45000, rate: 0.15 },
+  { upTo: 135000, rate: 0.3 },
+  { upTo: 190000, rate: 0.37 },
+  { upTo: null, rate: 0.45 },
+];
+export const AU_MEDICARE_LEVY_RATE = 0.02;
+
 export const MY_TAX_BANDS: TaxBand[] = [
   { upTo: 5000, rate: 0 },
   { upTo: 20000, rate: 0.01 },
@@ -195,7 +211,7 @@ export const MY_REBATE_MAX_CHARGEABLE_INCOME = 35000;
 export const FX_API_URL = "https://open.er-api.com/v6/latest/USD";
 export const FX_BASE_CURRENCY = "USD";
 export const IDR_CURRENCY_CODE = "IDR";
-export const FX_TARGET_CURRENCIES = ["SGD", "MYR", "NZD", "USD"] as const;
+export const FX_TARGET_CURRENCIES = ["SGD", "MYR", "NZD", "AUD", "USD"] as const;
 export const FX_RATE_MICRO_FACTOR = 1_000_000;
 export const FX_REQUEST_TIMEOUT_MS = 15000;
 
@@ -211,6 +227,7 @@ export const COUNTRY_PRIORITY_SCORES: Record<string, number> = {
   [COUNTRY_CODES.SINGAPORE]: 100,
   [COUNTRY_CODES.MALAYSIA]: 70,
   [COUNTRY_CODES.NEW_ZEALAND]: 40,
+  [COUNTRY_CODES.AUSTRALIA]: 40,
 };
 export const WORK_MODE_PRIORITY_SCORES: Record<string, number> = {
   [WORK_MODES.FULL_TIME]: 100,
@@ -234,6 +251,37 @@ export const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
 export const MICHAEL_PAGE_SG_LIST_URL = "https://www.michaelpage.com.sg/jobs/technology";
 export const MICHAEL_PAGE_BASE_URL = "https://www.michaelpage.com.sg";
 export const MICHAEL_PAGE_MAX_PAGES = 8;
+export const SEEK_BASE_URLS = {
+  [SOURCE_CODES.SEEK_NZ]: "https://nz.seek.com",
+  [SOURCE_CODES.SEEK_AU]: "https://au.seek.com",
+} as const;
+// Search keywords mirror TARGET_ROLE_PATTERN; ingest drops any title that still does not match it.
+export const TARGET_ROLE_SEARCH_KEYWORDS = ["full stack developer", "front end developer", "web developer", "react native developer", "ai engineer"];
+export const SEEK_MAX_PAGES = 2;
+export const SEEK_CARD_SELECTOR = 'article[data-automation="normalJob"]';
+export const SEEK_UNDISCLOSED_COMPANY = "Private advertiser";
+export const LINKEDIN_EMAIL_ENV_NAME = "LINKEDIN_EMAIL";
+export const LINKEDIN_PASSWORD_ENV_NAME = "LINKEDIN_PASSWORD";
+export const LINKEDIN_BASE_URL = "https://www.linkedin.com";
+export const LINKEDIN_LOGIN_URL = `${LINKEDIN_BASE_URL}/login`;
+export const LINKEDIN_FEED_URL = `${LINKEDIN_BASE_URL}/feed/`;
+// Holds a live login token: keep it gitignored.
+export const LINKEDIN_SESSION_PATH = "data/linkedin-session.json";
+export const LINKEDIN_SESSION_FILE_MODE = 0o600;
+export const LINKEDIN_LOCATIONS = [
+  { countryCode: COUNTRY_CODES.SINGAPORE, location: "Singapore" },
+  { countryCode: COUNTRY_CODES.MALAYSIA, location: "Malaysia" },
+  { countryCode: COUNTRY_CODES.NEW_ZEALAND, location: "New Zealand" },
+  { countryCode: COUNTRY_CODES.AUSTRALIA, location: "Australia" },
+] as const;
+export const LINKEDIN_RECENT_SECONDS = 604800;
+export const LINKEDIN_MAX_DETAIL_JOBS = 60;
+export const LINKEDIN_LOGIN_TIMEOUT_MS = 30000;
+export const LINKEDIN_SCROLL_DELAY_MS = 150;
+export const LINKEDIN_CARD_SELECTOR = "li[data-occludable-job-id]";
+export const LINKEDIN_DESCRIPTION_SELECTOR = ".jobs-description__content, #job-details";
+export const LINKEDIN_UNKNOWN_COMPANY = "Company not shown";
+export const LINKEDIN_CHECKPOINT_PATH_PATTERN = /\/(checkpoint|challenge|uas)\b/;
 export const MICHAEL_PAGE_CLIENT_COMPANY = "Michael Page (client undisclosed)";
 
 export const MAX_COMPARE_JOBS = 4;
