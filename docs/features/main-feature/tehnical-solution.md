@@ -10,7 +10,7 @@ Source: `prd.md`. Where PRD conflicts with project rules (global constitution), 
 | DB | SQLite via `better-sqlite3` | `lib/db.ts`, file `data/app.db`, WAL |
 | Query layer | Plain parameterized SQL in repositories | ORM (Drizzle/Prisma) deferred — see Open Questions |
 | Cron | `GET /api/cron/scrape` + Bearer `CRON_SECRET` | Triggered by system `cron` / GitHub Actions |
-| Calendar | `googleapis` (Calendar v3, OAuth 2.0) | Phase 4 only |
+| Calendar | skipped (no OAuth) | `calendar_events` table and `googleapis` are not built |
 | UI | Tailwind CSS | Decided. Not installed yet, added in Phase 4 |
 
 ## 2. Layers (R21)
@@ -75,6 +75,7 @@ Same job from several sources: first wins, later sources add a row to `job_sourc
 ## 6. Scoring and ranking
 
 - **Stack match score** = matched keywords / total target keywords, 0–100, keyword matrix in constants (Next.js, Angular, TypeScript, Node.js, NestJS, .NET, PHP, WordPress, PostgreSQL, MongoDB, AI, RAG). Whole-word, case-insensitive match against title + description.
+- **Role filter:** `TARGET_ROLE_PATTERN` on the job title (fullstack, frontend, web developer, React Native, AI engineer/developer) is the first rejection rule (`not_target_role`). Title-only, so a good job with a generic title is missed; loosen the pattern (or add a description check) if that hurts.
 - **Work mode rank:** Full-time > Hybrid > Flexible (higher = better). Strict on-site and contract roles are excluded (decided).
 - **Country preference:** SG > MY > NZ (from PRD "additional"; overrides table order in PRD section 2).
 - **Priority score** = weighted sum of: net savings rank, stack match, work mode rank, country preference, MNC/accredited employer flag. Weights in constants.

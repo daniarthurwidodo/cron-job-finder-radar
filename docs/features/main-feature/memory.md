@@ -45,6 +45,10 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Phase 4 dashboard built: / (scrape panel, daily rule, filters, 50/page, status change), /compare (max 4), /settings (CoL). Kanban (D5) and charts (D7) not built (P2). Verified with 51 tests, HTTP checks on real data, and a headless-Chrome click-through of status change + compare.
 
+- 2026-11-02: Role filter (title): fullstack, frontend, web developer, React Native, AI engineer/developer only. Generic "Software Engineer" is excluded. 565 old saved jobs soft-deleted.
+
+- 2026-11-02: Phase 4 approved. Phase 5 (Google Calendar / OAuth) SKIPPED. Next: Phase 6 (CV + letter), then Phase 7 (assisted apply).
+
 ## Open questions
 - None.
 

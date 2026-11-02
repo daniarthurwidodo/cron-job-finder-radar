@@ -38,6 +38,16 @@ Single user, running the app for personal use. Located in Indonesia, targeting r
 2. Kuala Lumpur, Malaysia
 3. Auckland, New Zealand
 
+### 4.1a Role types (title filter)
+Only jobs whose **title** names one of these are kept; everything else is dropped at ingest:
+- Fullstack (full stack, full-stack, fullstack)
+- Frontend (frontend, front-end, front end)
+- Web developer / web engineer / web application developer / website developer
+- React Native developer
+- AI engineer / AI developer (for example "Generative AI Engineer", "Senior AI Developer")
+
+Not kept: backend-only, data, DevOps, QA, mobile-native, and generic titles such as "Software Engineer" or "Software Developer" unless the title also names one of the roles above. Backend keywords (Node.js, NestJS, .NET, PHP, databases) still count toward the stack match score, but they no longer qualify a job on their own. Decision date 2026-11-02.
+
 ### 4.2 Work arrangement (highest priority)
 Full-time > Hybrid > Flexible hours. Strict on-site and contract roles are excluded.
 
@@ -69,7 +79,7 @@ Priority: **P0** required for first usable version, **P1** next, **P2** later.
 | F2 | The trigger endpoint is protected by a secret token | P0 |
 | F3 | A failure in one source does not stop the others; each run records counts and errors | P0 |
 | F4 | Jobs are normalized: title, company, city, country, work mode, seniority, salary, currency, description, posted date | P0 |
-| F5 | Jobs not matching section 4 filters are dropped before saving | P0 |
+| F5 | Jobs not matching section 4 filters (including the role-type title filter, 4.1a) are dropped before saving | P0 |
 
 **Sources** (in build order, by country preference)
 
@@ -128,7 +138,7 @@ Tax tables carry their tax year and must be verified against official sources. A
 | D10 | History view: pick a previous day to see the jobs first saved that day | P1 |
 | D8 | **Daily scrape activity panel** on the dashboard home: for the latest run and a per-day history, show for each source the time, jobs found, new jobs saved, duplicates, filtered, invalid, and any error (including "blocked by bot check"). Also a "New today" list of the jobs first saved in the latest run, sorted by priority score. Failed or blocked sources are visible, not hidden | P0 |
 
-### 5.6 Google Calendar
+### 5.6 Google Calendar (SKIPPED: user decided no OAuth, 2026-11-02)
 | ID | Requirement | Priority |
 | :--- | :--- | :--- |
 | C1 | Connect a Google account with OAuth 2.0 | P1 |

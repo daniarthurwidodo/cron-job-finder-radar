@@ -36,6 +36,9 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] First install on CachyOS: `npm ci && npm run build && deploy/install-systemd.sh` → verify: `systemctl --user list-timers radar-scrape.timer` shows next run; `npm test` passes there
 - [ ] Phase 3 headless browser uses system Chromium on Arch (`executablePath`)
 
+## Rule changes after Phase 3 approval
+- [x] Role-type filter: fullstack, frontend, web developer, React Native, AI engineer (title match) → verified: unit tests for accepted and rejected titles; existing 565 non-matching saved jobs soft-deleted (203 left)
+
 ## Phase 3 — More scrapers
 - [x] Add headless browser (`playwright-core` + system Chrome/Chromium, stops on bot checks) → verified on Michael Page SG
 - [-] hiredly, trademe → SKIPPED by user (2026-11-02)
@@ -58,14 +61,14 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload
 - [x] Compare modal, up to 4 jobs (gross/net IDR, savings, stack overlap, work mode, visa) → verify: manual check
 - [x] Settings page: CoL benchmarks → verified by test (edit recomputes savings). CV work-authorization wording per country moves to Phase 6; LinkedIn on/off dropped (LinkedIn skipped)
-- [ ] Checkpoint: approve Phase 4 (waiting for user review)
+- [x] Checkpoint: Phase 4 approved by user (2026-11-02)
 
-## Phase 5 — Google Calendar
-- [ ] Google Cloud project + OAuth credentials (user action) → verify: client id/secret in `.env.local`
-- [ ] OAuth flow + token storage → verify: connect/disconnect works
-- [ ] Add-to-calendar actions (deadline, HR screen, tech interview) → verify: event appears in Google Calendar and `calendar_events`
-- [ ] Show upcoming job events in dashboard (sync) → verify: event created in Google appears in portal
-- [ ] Checkpoint: approve Phase 5
+## Phase 5 — Google Calendar (SKIPPED by user 2026-11-02, OAuth not wanted)
+- [-] Google Cloud project + OAuth credentials (user action) → verify: client id/secret in `.env.local`
+- [-] OAuth flow + token storage → verify: connect/disconnect works
+- [-] Add-to-calendar actions (deadline, HR screen, tech interview) → verify: event appears in Google Calendar and `calendar_events`
+- [-] Show upcoming job events in dashboard (sync) → verify: event created in Google appears in portal
+- [-] Checkpoint: approve Phase 5
 
 ## Phase 6 — CV and cover letter
 - [x] Reference CV `data/reference-cv.md` exists and is git-ignored → verify: `git check-ignore` matches

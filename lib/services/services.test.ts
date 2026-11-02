@@ -125,10 +125,10 @@ test("same job from another source adds a source link, not a new job", () => {
 });
 
 test("only fullstack, frontend, web developer and React Native titles are target roles", () => {
-  for (const title of ["Full Stack Engineer", "Senior Fullstack Developer", "Full-stack Developer", "Frontend Engineer", "Front-End Developer", "Front End Developer", "Web Developer", "Senior Web Engineer", "React Native Developer", "React-Native Engineer"]) {
+  for (const title of ["Full Stack Engineer", "Senior Fullstack Developer", "Full-stack Developer", "Frontend Engineer", "Front-End Developer", "Front End Developer", "Web Developer", "Senior Web Engineer", "React Native Developer", "React-Native Engineer", "AI Engineer", "Senior AI Developer", "Generative AI Engineer", "AI Application Consultant and Engineer"]) {
     assert.equal(isTargetRole(title), true, title);
   }
-  for (const title of ["Backend Engineer", "Software Engineer", "Data Engineer", "DevOps Engineer", "Reactive Programmer", "Webmaster Assistant"]) {
+  for (const title of ["Backend Engineer", "Software Engineer", "Data Engineer", "DevOps Engineer", "Reactive Programmer", "Webmaster Assistant", "Aircraft Engineer", "AI Enabler", "Maid Developer"]) {
     assert.equal(isTargetRole(title), false, title);
   }
 });

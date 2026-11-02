@@ -65,8 +65,8 @@ export const REJECTION_REASONS = {
   NOT_TARGET_ROLE: "not_target_role",
 } as const;
 
-// Only these roles are kept: fullstack, frontend, web developer, React Native (matched on the job title).
-export const TARGET_ROLE_PATTERN = /\b(full[\s-]?stack|front[\s-]?end|web\s+(developer|engineer|application|app)|website\s+developer|react[\s-]?native)\b/i;
+// Only these roles are kept: fullstack, frontend, web developer, React Native, AI engineer/developer (matched on the job title).
+export const TARGET_ROLE_PATTERN = /\b(full[\s-]?stack|front[\s-]?end|web\s+(developer|engineer|application|app)|website\s+developer|react[\s-]?native|ai\b[^,()]{0,30}\b(engineer|developer))\b/i;
 export const ENTRY_TITLE_PATTERN = /\b(junior|intern|internship|trainee|graduate)\b/i;
 export const SENIOR_TITLE_PATTERN = /\b(senior|sr\.?)\b/i;
 export const LEAD_TITLE_PATTERN = /\b(lead|principal|staff|head)\b/i;
@@ -258,3 +258,27 @@ export const SEARCH_MAX_LENGTH = 100;
 
 export const LIST_PAGE_SIZE = 50;
 export const FIRST_PAGE = 1;
+
+export const DOCUMENT_KINDS = {
+  CV: "cv",
+  COVER_LETTER: "cover_letter",
+} as const;
+export const REFERENCE_CV_PATH = "data/reference-cv.md";
+export const CV_PRESENT_LABEL = "Present";
+export const CV_PRESENT_PATTERN = /current|present|now/i;
+export const CV_MAX_PAGES = 2;
+export const CV_ALLOWED_HEADINGS = ["Summary", "Work Experience", "Education", "Skills", "Certifications"] as const;
+export const CV_MONTH_ABBREVIATIONS: Record<string, string> = {
+  january: "Jan", february: "Feb", march: "Mar", april: "Apr", may: "May", june: "Jun",
+  july: "Jul", august: "Aug", september: "Sep", october: "Oct", november: "Nov", december: "Dec",
+};
+export const CV_COMPACTION_LEVELS = [
+  { maxRoles: 20, maxBulletsPerRole: 99, includeSummaryParagraphs: 2 },
+  { maxRoles: 20, maxBulletsPerRole: 6, includeSummaryParagraphs: 2 },
+  { maxRoles: 6, maxBulletsPerRole: 4, includeSummaryParagraphs: 1 },
+  { maxRoles: 5, maxBulletsPerRole: 3, includeSummaryParagraphs: 1 },
+  { maxRoles: 4, maxBulletsPerRole: 3, includeSummaryParagraphs: 1 },
+] as const;
+export const CV_MAX_SKILLS = 30;
+export const COVER_LETTER_MAX_SKILLS = 5;
+export const UNDISCLOSED_COMPANY_PATTERN = /undisclosed/i;

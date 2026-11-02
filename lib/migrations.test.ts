@@ -5,7 +5,7 @@ import { COUNTRY_CODES, JOB_STATUSES, SENIORITIES, WORK_MODES } from "@/lib/cons
 import { migrateDown, migrateUp } from "@/lib/migrations";
 
 const LOOKUP_TABLES = ["countries", "work_modes", "seniorities", "job_statuses"];
-const MIGRATION_NAMES = ["0001_init", "0002_financials"];
+const MIGRATION_NAMES = ["0001_init", "0002_financials", "0003_documents"];
 
 function listTableNames(db: Database.Database): string[] {
   const rows = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").all() as {
@@ -23,6 +23,7 @@ test("up, down, up succeeds on an empty database", () => {
   const db = new Database(":memory:");
   assert.deepEqual(migrateUp(db), MIGRATION_NAMES);
   assert.ok(listTableNames(db).includes("col_benchmarks"));
+  assert.equal(migrateDown(db), MIGRATION_NAMES[2]);
   assert.equal(migrateDown(db), MIGRATION_NAMES[1]);
   assert.equal(migrateDown(db), MIGRATION_NAMES[0]);
   assert.deepEqual(listTableNames(db), ["schema_migrations"]);

@@ -17,6 +17,9 @@ Built and verified live: MyCareersFuture (API), Michael Page SG (headless browse
 
 Skipped by user decision (2026-11-02), not built: Hiredly MY, Trade Me NZ, Hays SG, Randstad SG, Monroe, Relocate.me, Tech in Asia, LinkedIn. Manual import for blocked boards: also skipped. Reachable when wanted later: Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
 
+## Role filter caveat
+Title-only match drops generic titles ("Software Engineer", "Senior Software Developer", "Dot Net Developer") even when the description is full stack. On the first 768 saved jobs this kept 203. If the list feels too thin, options: also accept generic software titles whose description mentions web / React / Angular / Next.js, or add more title words (for example "UI engineer", "Angular developer").
+
 ## Policy for bot checks
 Scrapers use plain headless Chrome with default identity. If a page shows a bot check, CAPTCHA, or "automation detected" page, the scraper stops with `BotChallengeError`, records it in `scrape_runs.error_message`, and the source is listed above. No stealth plugins, UA spoofing, proxy rotation, or CAPTCHA solving.
 
