@@ -57,6 +57,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`.
 ## Phase 6 — CV and cover letter
 - [x] Reference CV `data/reference-cv.md` exists and is git-ignored → verify: `git check-ignore` matches
 - [ ] Tailored CV generator, 2-page international format, work-authorization line per country (setting) → verify: PDF is 2 pages
+- [ ] ATS-only renderer (single column, standard headings, no tables/images, text layer PDF + DOCX) and ATS validator → verify: validator fails a CV with a table/image/unknown heading; passes the generated CV; extracted PDF text order is correct
 - [ ] Interest letter generator → verify: uses only facts from reference CV
 - [ ] Store in `documents`, download from job detail → verify: manual check
 - [ ] Checkpoint: approve Phase 6

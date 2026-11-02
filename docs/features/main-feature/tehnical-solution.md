@@ -148,6 +148,8 @@ Migrations: numbered `.sql` files with matching `down`, run by a small runner sc
 - Output: per-job tailored CV (2-page international format, states work authorization: "Requires Visa Sponsorship" / "Open to Relocation") and interest letter.
 - Mechanism: LLM call (Claude API) with reference CV + job description; output stored in `documents`, rendered to PDF.
 - Hard rule in prompt: only reorder/emphasize facts present in reference CV, never invent experience.
+- **ATS format is mandatory** (PRD G6): the renderer has one layout only, so non-ATS output is not possible. Layout: single column, plain text blocks, standard headings, no images/tables. Rules are encoded as constants plus a validator that runs on the generated Markdown/PDF text and fails generation if it finds a table, image, unknown heading, missing contact line, missing work-authorization line, or more than 2 pages.
+- Render path: generated Markdown -> single-column HTML/CSS template -> PDF with text layer (and DOCX). Library choice in Phase 6.
 - Separate phase; depends on decisions in Open Questions.
 
 ## 11. Security

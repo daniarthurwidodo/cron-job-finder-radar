@@ -12,7 +12,7 @@ Short, durable facts and decisions. Append new ones with date.
 - Work mode priority: Full-time > Hybrid > Flexible.
 - Exclude Entry/Intern/Junior. Target Mid/Senior/Lead.
 - Target MNC / accredited employers.
-- CV: 2-page international format, state work authorization.
+- CV: 2-page international format, state work authorization. Always rendered in ATS format (single column, standard headings, no tables/images, text-layer PDF + DOCX). Rule list in prd.md section 5.7.
 - Job posts must be unique across sources.
 - Do not commit LinkedIn credentials anywhere.
 

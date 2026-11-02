@@ -140,6 +140,19 @@ Tax tables carry their tax year and must be verified against official sources. A
 | G3 | Generate an interest (cover) letter for a job from the reference CV and job description | P1 |
 | G4 | Generated content may only reorder or emphasize facts already in the reference CV; it must never invent experience | P1 |
 | G5 | Generated documents are saved per job and downloadable | P1 |
+| G6 | Every generated CV is always rendered in ATS (applicant tracking system) friendly format, see rules below. No option to turn this off | P1 |
+
+**ATS CV rules (always applied)**
+1. Single column, no tables, text boxes, columns, headers/footers holding content, images, icons, charts or skill-bar graphics.
+2. Standard section headings only: Summary, Work Experience, Education, Skills, Certifications.
+3. Reverse-chronological work history. Each role: job title, company, location, `Mon YYYY - Mon YYYY` dates.
+4. Plain bullet characters only. Standard fonts (Arial, Calibri or Times New Roman), body 10-12 pt, no colored text for meaning.
+5. Contact details as plain text in the body (not in a header/footer): name, email, phone, city and country, LinkedIn URL.
+6. Real, selectable text in the output file (no scanned image). Output as PDF with text layer, plus DOCX.
+7. Skills section is a plain comma-separated list that uses the job posting's exact keyword spelling (for example "Node.js", "PostgreSQL") only for skills already in the reference CV.
+8. Work-authorization line in plain text under the contact details.
+9. File name `Firstname-Lastname-CV-Company.pdf`, no spaces or special characters.
+10. 2 pages maximum.
 
 ## 6. Non-Functional Requirements
 - **Reliability:** a daily run completes even if some sources fail; errors are visible per run.

@@ -1,0 +1,9 @@
+DROP TABLE scrape_runs;
+DROP TABLE job_tech_tags;
+DROP TABLE job_sources;
+DROP TABLE jobs;
+DROP TABLE companies;
+DROP TABLE job_statuses;
+DROP TABLE seniorities;
+DROP TABLE work_modes;
+DROP TABLE countries;
