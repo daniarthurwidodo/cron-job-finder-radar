@@ -25,7 +25,7 @@ function buildRawJob(overrides: Partial<RawJob> = {}): RawJob {
     sourceCode: SOURCE_CODES.MYCAREERSFUTURE,
     sourceJobId: "abc",
     sourceUrl: "https://www.mycareersfuture.gov.sg/job/abc",
-    title: "Senior Node.js Developer",
+    title: "Senior Full Stack Developer",
     companyName: "Acme",
     city: "Singapore",
     countryCode: COUNTRY_CODES.SINGAPORE,

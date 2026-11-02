@@ -8,7 +8,7 @@ import { JobRepository } from "@/lib/repositories/jobRepository";
 import { JobSourceRepository } from "@/lib/repositories/jobSourceRepository";
 import { buildDedupHash, normalizeUrl } from "@/lib/services/dedup";
 import { IngestService } from "@/lib/services/ingestService";
-import { findRejectionReason } from "@/lib/services/jobFilter";
+import { findRejectionReason, isTargetRole } from "@/lib/services/jobFilter";
 import { normalizeJob, stripHtml, toMonthlyMinor } from "@/lib/services/normalizer";
 import { matchStack } from "@/lib/services/stackMatch";
 import type { RawJob } from "@/lib/types";
@@ -18,7 +18,7 @@ function buildRawJob(overrides: Partial<RawJob> = {}): RawJob {
     sourceCode: SOURCE_CODES.MYCAREERSFUTURE,
     sourceJobId: "abc",
     sourceUrl: "https://www.mycareersfuture.gov.sg/job/abc?utm_source=x",
-    title: "Senior Node.js Developer",
+    title: "Senior Full Stack Developer",
     companyName: "Acme Pte. Ltd.",
     city: "Singapore",
     countryCode: COUNTRY_CODES.SINGAPORE,
@@ -89,6 +89,8 @@ test("findRejectionReason covers each rule and accepts a good job", () => {
   const good = { ...normalizeJob(buildRawJob()), stackMatch: matchStack("Node.js TypeScript") };
   assert.equal(findRejectionReason(good), null);
   assert.equal(findRejectionReason({ ...good, seniorityCode: SENIORITIES.ENTRY }), REJECTION_REASONS.ENTRY_LEVEL);
+  assert.equal(findRejectionReason({ ...good, title: "Senior Java Backend Engineer" }), REJECTION_REASONS.NOT_TARGET_ROLE);
+  assert.equal(findRejectionReason({ ...good, title: "Software Engineer" }), REJECTION_REASONS.NOT_TARGET_ROLE);
   assert.equal(findRejectionReason({ ...good, workModeCode: WORK_MODES.ON_SITE }), REJECTION_REASONS.ON_SITE_ONLY);
   assert.equal(findRejectionReason({ ...good, isContractOrTemporary: true }), REJECTION_REASONS.CONTRACT_OR_TEMPORARY);
   assert.equal(findRejectionReason({ ...good, stackMatch: matchStack("nothing") }), REJECTION_REASONS.NO_STACK_MATCH);
@@ -107,7 +109,7 @@ test("ingest inserts once, then counts the same job as duplicate", () => {
   assert.deepEqual(first, { found: 1, inserted: 1, duplicates: 0, filtered: 0, invalid: 0 });
   const second = service.ingest([buildRawJob()]);
   assert.deepEqual(second, { found: 1, inserted: 0, duplicates: 1, filtered: 0, invalid: 0 });
-  const jobId = jobs.findIdByDedupHash(buildDedupHash({ companyName: "Acme Pte. Ltd.", title: "Senior Node.js Developer", city: "Singapore" }));
+  const jobId = jobs.findIdByDedupHash(buildDedupHash({ companyName: "Acme Pte. Ltd.", title: "Senior Full Stack Developer", city: "Singapore" }));
   assert.ok(jobId);
   assert.equal(jobSources.countByJobId(jobId), 1);
 });
@@ -117,9 +119,18 @@ test("same job from another source adds a source link, not a new job", () => {
   service.ingest([buildRawJob()]);
   const otherSource = buildRawJob({ sourceCode: "other", sourceJobId: "zzz", sourceUrl: "https://other.test/jobs/zzz" });
   assert.equal(service.ingest([otherSource]).duplicates, 1);
-  const jobId = jobs.findIdByDedupHash(buildDedupHash({ companyName: "Acme Pte. Ltd.", title: "Senior Node.js Developer", city: "Singapore" }));
+  const jobId = jobs.findIdByDedupHash(buildDedupHash({ companyName: "Acme Pte. Ltd.", title: "Senior Full Stack Developer", city: "Singapore" }));
   assert.ok(jobId);
   assert.equal(jobSources.countByJobId(jobId), 2);
+});
+
+test("only fullstack, frontend, web developer and React Native titles are target roles", () => {
+  for (const title of ["Full Stack Engineer", "Senior Fullstack Developer", "Full-stack Developer", "Frontend Engineer", "Front-End Developer", "Front End Developer", "Web Developer", "Senior Web Engineer", "React Native Developer", "React-Native Engineer"]) {
+    assert.equal(isTargetRole(title), true, title);
+  }
+  for (const title of ["Backend Engineer", "Software Engineer", "Data Engineer", "DevOps Engineer", "Reactive Programmer", "Webmaster Assistant"]) {
+    assert.equal(isTargetRole(title), false, title);
+  }
 });
 
 test("a job with no posted salary is kept, not filtered", () => {

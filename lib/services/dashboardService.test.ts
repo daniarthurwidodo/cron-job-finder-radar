@@ -17,7 +17,7 @@ function buildRawJob(overrides: Partial<RawJob>): RawJob {
     sourceCode: "mycareersfuture",
     sourceJobId: "id",
     sourceUrl: "https://x.test/job/id",
-    title: "Senior Node.js Developer",
+    title: "Senior Full Stack Developer",
     companyName: "Acme",
     city: "Singapore",
     countryCode: COUNTRY_CODES.SINGAPORE,
@@ -59,31 +59,31 @@ function titles(world: ReturnType<typeof buildWorld>, query: string): string[] {
 
 test("main list shows only jobs first saved on the latest run day", () => {
   const world = buildWorld();
-  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Dev Today" }, day: LATEST_DAY });
-  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Dev Yesterday" }, day: PREVIOUS_DAY });
-  assert.deepEqual(titles(world, ""), ["Dev Today"]);
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Dev Today Web Developer" }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Dev Yesterday Web Developer" }, day: PREVIOUS_DAY });
+  assert.deepEqual(titles(world, ""), ["Dev Today Web Developer"]);
 });
 
 test("tracked jobs stay visible; rejected and archived are hidden", () => {
   const world = buildWorld();
   const old = (sourceJobId: string, title: string) =>
     addJob({ world, job: { sourceJobId, sourceUrl: `https://x.test/${sourceJobId}`, title }, day: PREVIOUS_DAY });
-  const bookmarked = old("a", "Old Bookmarked");
-  const untouched = old("b", "Old Untouched");
-  const rejected = old("c", "Old Rejected");
+  const bookmarked = old("a", "Old Bookmarked Web Developer");
+  const untouched = old("b", "Old Untouched Web Developer");
+  const rejected = old("c", "Old Rejected Web Developer");
   world.dashboard.changeStatus({ jobId: bookmarked, statusCode: JOB_STATUSES.BOOKMARKED });
   world.dashboard.changeStatus({ jobId: rejected, statusCode: JOB_STATUSES.REJECTED });
   assert.ok(untouched);
-  assert.deepEqual(titles(world, ""), ["Old Bookmarked"]);
-  addJob({ world, job: { sourceJobId: "d", sourceUrl: "https://x.test/d", title: "New Rejected" }, day: LATEST_DAY });
+  assert.deepEqual(titles(world, ""), ["Old Bookmarked Web Developer"]);
+  addJob({ world, job: { sourceJobId: "d", sourceUrl: "https://x.test/d", title: "New Rejected Web Developer" }, day: LATEST_DAY });
   const newRejected = (world.db.prepare("SELECT MAX(id) AS id FROM jobs").get() as { id: number }).id;
   world.dashboard.changeStatus({ jobId: newRejected, statusCode: JOB_STATUSES.ARCHIVED });
-  assert.deepEqual(titles(world, ""), ["Old Bookmarked"]);
+  assert.deepEqual(titles(world, ""), ["Old Bookmarked Web Developer"]);
 });
 
 test("a missed run day does not empty the list: day follows the latest run, not the clock", () => {
   const world = buildWorld();
-  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Last Run Job" }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Last Run Job Web Developer" }, day: LATEST_DAY });
   const home = world.dashboard.getHome(parseJobFilters({}));
   assert.equal(home.day, LATEST_DAY);
   assert.equal(home.jobs.length, 1);
@@ -91,29 +91,29 @@ test("a missed run day does not empty the list: day follows the latest run, not 
 
 test("history view shows only the picked day, any status", () => {
   const world = buildWorld();
-  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Yesterday Job" }, day: PREVIOUS_DAY });
-  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Today Job" }, day: LATEST_DAY });
-  assert.deepEqual(titles(world, `day=${PREVIOUS_DAY}`), ["Yesterday Job"]);
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Yesterday Job Web Developer" }, day: PREVIOUS_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Today Job Web Developer" }, day: LATEST_DAY });
+  assert.deepEqual(titles(world, `day=${PREVIOUS_DAY}`), ["Yesterday Job Web Developer"]);
   assert.deepEqual(world.dashboard.getHome(parseJobFilters({ day: PREVIOUS_DAY })).days, [LATEST_DAY, PREVIOUS_DAY]);
 });
 
 test("jobs from different boards follow the same rule", () => {
   const world = buildWorld();
-  addJob({ world, job: { sourceCode: "mycareersfuture", sourceJobId: "a", sourceUrl: "https://x.test/a", title: "MCF Job" }, day: LATEST_DAY });
-  addJob({ world, job: { sourceCode: "michaelpage_sg", sourceJobId: "b", sourceUrl: "https://mp.test/b", title: "MP Job", companyName: "MP Client" }, day: LATEST_DAY });
-  assert.deepEqual(titles(world, "sort=newest").sort(), ["MCF Job", "MP Job"]);
+  addJob({ world, job: { sourceCode: "mycareersfuture", sourceJobId: "a", sourceUrl: "https://x.test/a", title: "MCF Job Web Developer" }, day: LATEST_DAY });
+  addJob({ world, job: { sourceCode: "michaelpage_sg", sourceJobId: "b", sourceUrl: "https://mp.test/b", title: "MP Job Web Developer", companyName: "MP Client" }, day: LATEST_DAY });
+  assert.deepEqual(titles(world, "sort=newest").sort(), ["MCF Job Web Developer", "MP Job Web Developer"]);
 });
 
 test("filters, search (with LIKE characters escaped) and savings sort with missing salary last", () => {
   const world = buildWorld();
   world.exchangeRates.upsert({ currencyCode: "SGD", rateToIdr: SGD_RATE });
-  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Low Pay Dev", salaryMin: 6000 }, day: LATEST_DAY });
-  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "High Pay Dev", companyName: "Rich 100% Co", salaryMin: 12000 }, day: LATEST_DAY });
-  addJob({ world, job: { sourceJobId: "c", sourceUrl: "https://x.test/c", title: "No Pay Dev", salaryMin: null, salaryMax: null }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Low Pay Dev Web Developer", salaryMin: 6000 }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "High Pay Dev Web Developer", companyName: "Rich 100% Co", salaryMin: 12000 }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "c", sourceUrl: "https://x.test/c", title: "No Pay Dev Web Developer", salaryMin: null, salaryMax: null }, day: LATEST_DAY });
   world.financials.recalculateAll();
-  assert.deepEqual(titles(world, `sort=${SORT_KEYS.SAVINGS}`), ["High Pay Dev", "Low Pay Dev", "No Pay Dev"]);
-  assert.deepEqual(titles(world, "q=100%25"), ["High Pay Dev"]);
-  assert.deepEqual(titles(world, "q=%25"), ["High Pay Dev"]);
+  assert.deepEqual(titles(world, `sort=${SORT_KEYS.SAVINGS}`), ["High Pay Dev Web Developer", "Low Pay Dev Web Developer", "No Pay Dev Web Developer"]);
+  assert.deepEqual(titles(world, "q=100%25"), ["High Pay Dev Web Developer"]);
+  assert.deepEqual(titles(world, "q=%25"), ["High Pay Dev Web Developer"]);
   assert.deepEqual(titles(world, "country=NZ"), []);
   assert.equal(titles(world, "country=SG&seniority=senior").length, 3);
 });
@@ -122,7 +122,7 @@ test("list is paginated at 50 per page; page is clamped and filters keep working
   const world = buildWorld();
   const total = LIST_PAGE_SIZE * 2 + 3;
   for (let index = 0; index < total; index += 1) {
-    addJob({ world, job: { sourceJobId: `j${index}`, sourceUrl: `https://x.test/j${index}`, title: `Dev ${index}` }, day: LATEST_DAY });
+    addJob({ world, job: { sourceJobId: `j${index}`, sourceUrl: `https://x.test/j${index}`, title: `Web Developer ${index}` }, day: LATEST_DAY });
   }
   const first = world.dashboard.getHome(parseJobFilters({ sort: SORT_KEYS.NEWEST }));
   const third = world.dashboard.getHome(parseJobFilters({ sort: SORT_KEYS.NEWEST, page: "3" }));

@@ -62,8 +62,11 @@ export const REJECTION_REASONS = {
   ON_SITE_ONLY: "on_site_only",
   CONTRACT_OR_TEMPORARY: "contract_or_temporary",
   NO_STACK_MATCH: "no_stack_match",
+  NOT_TARGET_ROLE: "not_target_role",
 } as const;
 
+// Only these roles are kept: fullstack, frontend, web developer, React Native (matched on the job title).
+export const TARGET_ROLE_PATTERN = /\b(full[\s-]?stack|front[\s-]?end|web\s+(developer|engineer|application|app)|website\s+developer|react[\s-]?native)\b/i;
 export const ENTRY_TITLE_PATTERN = /\b(junior|intern|internship|trainee|graduate)\b/i;
 export const SENIOR_TITLE_PATTERN = /\b(senior|sr\.?)\b/i;
 export const LEAD_TITLE_PATTERN = /\b(lead|principal|staff|head)\b/i;
