@@ -232,3 +232,23 @@ export const MICHAEL_PAGE_SG_LIST_URL = "https://www.michaelpage.com.sg/jobs/tec
 export const MICHAEL_PAGE_BASE_URL = "https://www.michaelpage.com.sg";
 export const MICHAEL_PAGE_MAX_PAGES = 8;
 export const MICHAEL_PAGE_CLIENT_COMPANY = "Michael Page (client undisclosed)";
+
+export const MAX_COMPARE_JOBS = 4;
+export const TRACKED_JOB_STATUSES = [
+  JOB_STATUSES.BOOKMARKED,
+  JOB_STATUSES.APPLIED,
+  JOB_STATUSES.INTERVIEWING,
+  JOB_STATUSES.OFFER,
+] as const;
+export const HIDDEN_JOB_STATUSES = [JOB_STATUSES.REJECTED, JOB_STATUSES.ARCHIVED] as const;
+export const SORT_KEYS = {
+  PRIORITY: "priority",
+  SAVINGS: "savings",
+  STACK: "stack",
+  NEWEST: "newest",
+} as const;
+export const DEFAULT_SORT_KEY = SORT_KEYS.PRIORITY;
+export const RECENT_SCRAPE_RUNS_LIMIT = 24;
+export const HISTORY_DAYS_LIMIT = 30;
+export const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+export const SEARCH_MAX_LENGTH = 100;
