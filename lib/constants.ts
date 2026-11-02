@@ -296,3 +296,49 @@ export const APPLY_PAGE_SETTLE_MS = 2500;
 export const APPLY_TEMP_DIR_PREFIX = "radar-apply-";
 export const APPLY_ACTION_TIMEOUT_MS = 5000;
 export const APPLY_TEMP_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+export const EMAIL_CATEGORIES = {
+  INTERVIEW: "interview",
+  ASSESSMENT: "assessment",
+  OFFER: "offer",
+  REJECTION: "rejection",
+  RECEIVED: "application_received",
+  OTHER: "other",
+} as const;
+// Order matters: the first matching rule wins (a rejection often mentions "interview").
+export const EMAIL_CATEGORY_RULES: { category: string; pattern: RegExp }[] = [
+  { category: EMAIL_CATEGORIES.REJECTION, pattern: /unfortunately|regret to inform|not (been )?successful|not moving forward|will not be (moving|proceeding)|other candidates|decided not to/i },
+  { category: EMAIL_CATEGORIES.OFFER, pattern: /offer letter|pleased to offer|job offer|offer of employment|we would like to offer/i },
+  { category: EMAIL_CATEGORIES.INTERVIEW, pattern: /interview|schedule a call|invite you to (a )?(call|meet|chat)|meet with (our|the) team/i },
+  { category: EMAIL_CATEGORIES.ASSESSMENT, pattern: /assessment|coding (test|challenge)|take-?home|technical test|hackerrank|codility|codesignal/i },
+  { category: EMAIL_CATEGORIES.RECEIVED, pattern: /thank you for applying|application (has been )?received|received your application|we have received your/i },
+];
+export const EMAIL_SUGGESTED_STATUS: Record<string, string | null> = {
+  [EMAIL_CATEGORIES.INTERVIEW]: JOB_STATUSES.INTERVIEWING,
+  [EMAIL_CATEGORIES.ASSESSMENT]: JOB_STATUSES.INTERVIEWING,
+  [EMAIL_CATEGORIES.OFFER]: JOB_STATUSES.OFFER,
+  [EMAIL_CATEGORIES.REJECTION]: JOB_STATUSES.REJECTED,
+  [EMAIL_CATEGORIES.RECEIVED]: null,
+  [EMAIL_CATEGORIES.OTHER]: null,
+};
+export const EMAIL_MATCH_WEIGHTS = { DOMAIN: 5, UNDISCLOSED_DOMAIN: 2, COMPANY_IN_TEXT: 4, TITLE: 3, REFERENCE: 6 } as const;
+export const EMAIL_MATCH_MIN_SCORE = 5;
+export const EMAIL_TITLE_MATCH_RATIO = 0.6;
+export const EMAIL_MIN_TOKEN_LENGTH = 3;
+export const EMAIL_MIN_REFERENCE_LENGTH = 6;
+export const COMPANY_STOP_WORDS = ["pte", "ltd", "limited", "private", "sdn", "bhd", "inc", "llc", "co", "the", "and", "group", "singapore", "malaysia", "holdings", "international", "technologies", "technology", "solutions", "services"] as const;
+export const FREE_MAIL_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com", "yahoo.com", "icloud.com", "proton.me", "protonmail.com"] as const;
+export const GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+export const GMAIL_API_URL = "https://gmail.googleapis.com/gmail/v1/users/me";
+export const GMAIL_QUERY = 'newer_than:30d -category:promotions -category:social (application OR interview OR assessment OR offer OR unfortunately OR regret OR "thank you for applying" OR "your application")';
+export const GMAIL_MAX_MESSAGES = 100;
+export const GMAIL_REQUEST_TIMEOUT_MS = 20000;
+export const GOOGLE_CLIENT_ID_ENV_NAME = "GOOGLE_CLIENT_ID";
+export const GOOGLE_CLIENT_SECRET_ENV_NAME = "GOOGLE_CLIENT_SECRET";
+export const GOOGLE_REDIRECT_URI_ENV_NAME = "GOOGLE_REDIRECT_URI";
+export const GOOGLE_DEFAULT_REDIRECT_URI = "http://127.0.0.1:3000/api/auth/google/callback";
+export const GOOGLE_STATE_COOKIE = "google_oauth_state";
+export const GOOGLE_VERIFIER_COOKIE = "google_oauth_verifier";
+export const GOOGLE_COOKIE_MAX_AGE_SECONDS = 600;
+export const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
+export const EMAIL_PANEL_RECENT_LIMIT = 10;

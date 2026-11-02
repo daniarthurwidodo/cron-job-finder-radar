@@ -168,6 +168,17 @@ Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-
 - Temp files: the CV PDF for upload is written to the OS temp dir (`radar-apply-*`); folders older than 24h are deleted on the next Start apply.
 - Linux: the visible window needs a display session. `install-systemd.sh` imports DISPLAY / WAYLAND_DISPLAY / XAUTHORITY into the user manager; if the service started before login it may need a restart after login.
 
+## 10b. Email check (Phase 8, Gmail read-only)
+
+- **OAuth:** authorization-code flow with PKCE and a random `state` checked on return, via `google-auth-library` (one small dependency). Routes: `/api/auth/google/start` and `/api/auth/google/callback` (redirect `http://127.0.0.1:3000/api/auth/google/callback`, host/port from env). Scope: `https://www.googleapis.com/auth/gmail.readonly` only. Client id/secret in `.env.local` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`); never typed or created by the app or by Claude.
+- **Gmail calls:** plain `fetch` against the Gmail REST API (`users.messages.list` with a query, then `messages.get?format=metadata` for From, Subject, Date plus `snippet`). No `googleapis` package.
+- **Query:** `newer_than:30d -category:promotions -category:social` plus job keywords (application, interview, assessment, offer, unfortunately, regret, "thank you for applying"). Only metadata and snippet are requested; no body, no attachments.
+- **Tables (migration `0005`):** `google_connections` (id, account_email, refresh_token, scope, connected_at, created_at, updated_at), `job_emails` (id, job_id, gmail_message_id, thread_id, from_address, subject, snippet, received_at, category, suggested_status_code, match_reason, is_dismissed, created_at, updated_at; index on job_id and gmail_message_id), `email_sync_runs` (id, started_at, finished_at, fetched_count, matched_count, error_message, created_at, updated_at). Refresh token sits in the local SQLite file (already holds personal data, git-ignored); the access token is never stored.
+- **Layers:** data = `GmailClient` + repositories; logic = `EmailMatchService` (company/domain/title scoring), `EmailCategoryService` (keyword rules in constants, lookup map category -> suggested status); presentation = job page section, home panel, Settings connect/disconnect/sync buttons.
+- **Matching:** score = company-name tokens in sender domain or subject (strong), job title words in subject/snippet (medium), agency reference number in subject (strong). Below the threshold the email is dropped, not stored. Candidates are limited to Bookmarked/Applied/Interviewing/Offer/apply-queue jobs.
+- **Safety:** email text is escaped on render, never used as an instruction, never fetched as a URL. Disconnect deletes `google_connections` and stored `job_emails` stay unless the user clears them.
+- **Daily run:** after the scrape and financial recalculation, `dailyScrape` calls email sync if connected, inside its own try/catch; failure is logged and recorded in `email_sync_runs`.
+
 ## 11. Security
 
 - `/api/cron/scrape` rejects without `Authorization: Bearer $CRON_SECRET` (constant-time compare).

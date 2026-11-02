@@ -53,6 +53,10 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Phase 7 built: queue (opt-in per job), Apply queue page, Start apply (visible browser, pre-fill Michael Page only, never submits, no action on login pages), I applied / Skip / Remove. All phases except skipped ones (3 partly, 5) now built.
 
+- 2026-11-02: Phase 8 approved and BUILT (email check only, Gmail read-only, suggestions only, no Calendar). Real Google connection waits on user OAuth credentials in .env.local; everything else tested with a fake Gmail.
+
+- 2026-11-02: Phase 8 approved by user. All phases approved or skipped.
+
 ## Open questions
 - None.
 

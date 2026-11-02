@@ -1,16 +1,19 @@
 import { connection } from "next/server";
+import { GoogleSection } from "@/app/settings/GoogleSection";
 import { saveColBenchmark, saveWorkAuthorization } from "@/app/actions";
 import { getServices } from "@/lib/container";
 import { COUNTRY_LABELS, formatMajorFromMinor, labelOf } from "@/lib/dashboard/format";
 import { TAX_YEAR_NOTES, WORK_AUTHORIZATION_MAX_LENGTH } from "@/lib/constants";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await connection();
+  const googleOutcome = (await searchParams).google;
   const { dashboard } = getServices();
   const benchmarks = dashboard.listColBenchmarks();
   const authorizations = dashboard.listWorkAuthorizations();
   return (
     <div className="flex max-w-3xl flex-col gap-4">
+      <GoogleSection outcome={typeof googleOutcome === "string" ? googleOutcome : undefined} />
       <h1 className="text-xl font-semibold">Settings - monthly cost of living</h1>
       <p className="text-sm">
         One-bedroom rent in the city centre plus living costs for a single person, in local currency. Saving a value recalculates net savings for every job.

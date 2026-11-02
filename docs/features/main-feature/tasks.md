@@ -21,7 +21,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] Scheduling: systemd user timer + installer in `deploy/` (replaces cron, CachyOS) → user runs `deploy/install-systemd.sh` on the CachyOS machine
 - [x] First scraper: mycareersfuture.gov.sg → verify: run returns jobs, saved, rerun adds 0 duplicates
 - [x] `/api/cron/scrape` with bearer auth → verify: 401 without token, 200 with, `scrape_runs` row written
-- [ ] Checkpoint: approve Phase 1 (waiting for user review)
+- [x] Checkpoint: Phase 1 approved by user (2026-11-02)
 
 ## Phase 2 — Financial engine
 - [x] FX fetcher + `exchange_rates` cache with stale fallback → verify: offline run uses cached rate
@@ -29,7 +29,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] Research current CoL data for SG, KL, Auckland (cite source + date) and seed `col_benchmarks` → verify: sources recorded; change a benchmark, savings recomputed
 - [x] FinancialService computes `est_*_idr` on ingest, NULL if no salary → verify: unit tests incl. missing salary
 - [x] Priority score (savings, stack, work mode, SG > MY > NZ, MNC) → verify: ordering test
-- [ ] Checkpoint: approve Phase 2 (waiting for user review)
+- [x] Checkpoint: Phase 2 approved by user (2026-11-02)
 
 ## Cross-cutting — CachyOS / Arch
 - [x] Linux compatibility review: import case, paths, engines, systemd timer, install steps in tech doc section 11a
@@ -49,7 +49,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] Robert Walters → BLOCKED (bot check), see `todos.md`
 - [-] LinkedIn → SKIPPED by user (no credentials supplied)
 - [-] MNC / accredited employer flag → deferred to Phase 4 settings page (column `is_mnc` exists, nothing sets it yet)
-- [ ] Checkpoint: approve Phase 3 (waiting for user review). Sources live: MyCareersFuture, Michael Page SG
+- [x] Checkpoint: Phase 3 approved by user (2026-11-02). Sources live: MyCareersFuture, Michael Page SG
 
 ## Phase 4 — Dashboard
 - [x] Install Tailwind CSS → verify: utility class renders on a page
@@ -76,7 +76,7 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] ATS-only renderer (single column, standard headings, no tables/images, text layer PDF; DOCX deferred, see todos.md) and ATS validator → verify: validator fails a CV with a table/image/unknown heading; passes the generated CV; extracted PDF text order is correct
 - [x] Interest letter generator → verify: uses only facts from reference CV
 - [x] Store in `documents`, download from job detail → verify: manual check
-- [ ] Checkpoint: approve Phase 6 (waiting for user review)
+- [x] Checkpoint: Phase 6 approved by user (2026-11-02)
 
 ## Phase 7 — Assisted apply queue (depends on Phase 6)
 - [x] Migration `0004`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
@@ -84,4 +84,20 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [x] Generate documents for queued job on demand (reuses Phase 6) → verify: documents attached, state becomes Ready
 - [x] "Start apply": headed browser opens apply page, pre-fills what the site adapter supports, stops → verified on a local fixture form (fills fields, uploads CV, never clicks submit, does nothing on a login page) and read-only detection on a real Michael Page job page. NOT yet run live with a visible window and a real form: user to try one
 - [x] "I applied" confirmation moves job to Applied with date → verify: status and date persist
-- [ ] Checkpoint: approve Phase 7 (waiting for user review)
+- [x] Checkpoint: Phase 7 approved by user (2026-11-02)
+
+## Phase 8 — Email check, Gmail read-only (approved 2026-11-02; built; only the real Google connection is waiting on user credentials)
+Waiting on the user (does not block the code): Google Cloud project, Gmail API enabled, OAuth client, `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` in `.env.local`. See `todos.md`.
+- [x] Migration `0005`: `google_connections`, `job_emails`, `email_sync_runs` → verify: up, down, up
+- [x] Constants: categories, keyword rules, category -> suggested status map, match thresholds → verify: no literals in logic
+- [x] OAuth start/callback routes with PKCE + state, token saved, Disconnect deletes it → verified: unit tests for URL (read-only scope, S256, state) and state checks; live HTTP checks with fake test values (302 to Google, bad state / no cookies / denied all land on Settings); real connect NOT done: needs user credentials
+- [x] `GmailClient` (list + metadata get, snippet only) with fake in tests → verified: header/snippet parsing tested; real Gmail calls NOT run live (no credentials); 401 and revoked token give a "reconnect" error
+- [x] `EmailCategoryService` → verify: tests for interview, assessment, offer, rejection, received, other, including a phishing-style email that contains instructions (must be ignored)
+- [x] `EmailMatchService` → verify: tests for company/domain match, title match, agency reference match, below-threshold dropped, only candidate jobs considered
+- [x] Sync service: fetch, match, store (idempotent on `gmail_message_id`), `email_sync_runs` row → verify: running twice stores no duplicates
+- [x] Settings: Connect / Disconnect / Sync now with status → verified: shows "Not configured" without credentials and "Connect Google" with them; Sync/Disconnect forms need a real connection
+- [x] Job page "Emails" section with Confirm status / Dismiss for suggestions → verify: confirm changes status; dismiss hides; nothing changes without a click
+- [x] Home "Email updates" panel → verify: shows last sync, new matches, pending suggestions, errors
+- [x] Daily run calls sync when connected, failure never blocks the scrape → verify: test with a failing client
+- [x] Checkpoint: Phase 8 approved by user (2026-11-02)
+

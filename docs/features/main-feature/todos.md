@@ -28,6 +28,16 @@ Skipped by user decision (2026-11-02), not built: Hiredly MY, Trade Me NZ, Hays 
 | Work authorization default text | "Open to relocation to X. Requires visa sponsorship (...)" per country; edit in Settings |
 | CV and letter text quality | Letter is a plain template, not AI-written. Switch to the Claude API later if you want richer letters (needs `ANTHROPIC_API_KEY`) |
 
+## Email check (Phase 8) blockers and risks
+| Item | Note |
+| :--- | :--- |
+| **Waiting on user:** Google Cloud project, Gmail API, OAuth client (redirect `http://127.0.0.1:3000/api/auth/google/callback`), `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` in `.env.local`, restart, then click Connect Google in Settings | Code is built and tested with a fake Gmail; the real Google round trip (token exchange, profile, Gmail list/get) has never run. Expect small fixes on first connect |
+| Testing mode login expires every 7 days | Reconnect weekly, or publish the Google project "In production" for your own account (shows an unverified-app warning, fine for personal use) |
+| Gmail read scope is a Google "sensitive" scope | Fine for your own account; not for sharing the app with others |
+| Agency mail (Michael Page etc.) hides the client | Matching falls back to job title and reference number; expect misses |
+| Keyword categories give false positives | Suggestions only; user confirms every status change |
+| Inbox privacy | Only metadata and snippet are stored; query is narrowed to job-looking mail; matched mail only |
+
 ## Role filter caveat
 Title-only match drops generic titles ("Software Engineer", "Senior Software Developer", "Dot Net Developer") even when the description is full stack. On the first 768 saved jobs this kept 203. If the list feels too thin, options: also accept generic software titles whose description mentions web / React / Angular / Next.js, or add more title words (for example "UI engineer", "Angular developer").
 

@@ -23,6 +23,7 @@ Expat Job Radar is a personal tool that every day collects expat-friendly tech j
 
 **Non-goals (v1)**
 - Multi-user accounts, sharing, or a public product.
+- Reading or sending email beyond the read-only Gmail check in 5.9.
 - Unattended auto-submit of applications. Applying is "assisted": the app prepares everything, the user presses Submit (see 5.8).
 - Mobile app (responsive web is enough).
 - Immigration/visa legal advice. Visa data is informational only.
@@ -181,6 +182,22 @@ The app only collects and ranks jobs. Nothing is applied to unless the user pick
 | A7 | Apply queue page lists queued jobs with state: Needs documents, Ready to apply, Applied, Skipped | P1 |
 
 Limits to expect: MyCareersFuture applies need Singpass login; Michael Page uses its own form; blocked boards (todos.md) cannot be opened by automation at all and will only open the link in the user's normal browser.
+
+### 5.9 Email check (Gmail, read-only)
+Reads job-related email and shows it next to the jobs it belongs to. Calendar stays skipped (5.6); only Gmail is used.
+
+| ID | Requirement | Priority |
+| :--- | :--- | :--- |
+| E1 | "Connect Google" in Settings runs Google OAuth for the user's own account with the read-only scope `gmail.readonly`. "Disconnect" deletes the stored token. No send, delete, modify or label access | P1 |
+| E2 | "Sync now" and the daily run fetch recent messages (last 30 days) that look job-related and store only sender, subject, date and Gmail's short snippet. Full bodies and attachments are not stored | P1 |
+| E3 | Each email is matched to a job by company name, sender domain and job title. Only jobs the user cares about are candidates: Bookmarked, Applied, Interviewing, Offer, or in the apply queue. Unmatched mail is not kept | P1 |
+| E4 | Each matched email is categorized by keyword rules, no AI: interview invite, assessment, offer, rejection, application received, other | P1 |
+| E5 | A category implies a suggested status (interview -> Interviewing, offer -> Offer, rejection -> Rejected, application received -> none). The app only suggests; the user confirms or dismisses. It never changes status on its own | P1 |
+| E6 | Job page shows the emails for that job. Dashboard home shows an "Email updates" panel: last sync time, new matched emails, and pending status suggestions | P1 |
+| E7 | Email content is untrusted data: it is only keyword-matched, never executed, followed or shown as HTML; links in snippets are plain text | P1 |
+| E8 | Sync failures (expired token, API error) are shown in the panel; the daily scrape is never blocked by an email failure | P1 |
+
+Limits: Michael Page and other agencies write from their own domain and hide the client name, so matching those jobs relies on job title and reference number. While the Google project is in Testing mode the login expires every 7 days and must be reconnected.
 
 ## 6. Non-Functional Requirements
 - **Reliability:** a daily run completes even if some sources fail; errors are visible per run.

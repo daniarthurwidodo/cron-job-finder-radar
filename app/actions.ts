@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 const HOME_PATH = "/";
 const SETTINGS_PATH = "/settings";
 const APPLY_PATH = "/apply";
+const EMAIL_JOB_PATH_PREFIX = "/jobs/";
 
 export async function changeJobStatus(formData: FormData): Promise<void> {
   const jobId = Number(formData.get("jobId"));
@@ -90,4 +91,40 @@ export async function startApply(_previous: StartApplyState, formData: FormData)
     logger.error("start apply failed", { jobId, error: String(error) });
     return { error: error instanceof Error ? error.message : "Could not start apply" };
   }
+}
+
+export interface SyncEmailsState {
+  error?: string;
+  message?: string;
+}
+
+export async function syncEmailsNow(): Promise<SyncEmailsState> {
+  try {
+    const result = await getServices().email.syncNow();
+    revalidatePath(HOME_PATH);
+    revalidatePath(SETTINGS_PATH);
+    return { message: `Fetched ${result.fetched} emails, ${result.matched} new matched to your jobs.` };
+  } catch (error) {
+    logger.error("email sync failed", { error: String(error) });
+    revalidatePath(SETTINGS_PATH);
+    return { error: error instanceof Error ? error.message : "Email sync failed" };
+  }
+}
+
+export async function disconnectGoogle(): Promise<void> {
+  getServices().email.disconnect();
+  revalidatePath(SETTINGS_PATH);
+  revalidatePath(HOME_PATH);
+}
+
+export async function confirmEmailSuggestion(formData: FormData): Promise<void> {
+  getServices().email.confirmSuggestion(Number(formData.get("emailId")));
+  revalidatePath(HOME_PATH);
+  revalidatePath(`${EMAIL_JOB_PATH_PREFIX}${Number(formData.get("jobId"))}`);
+}
+
+export async function dismissEmailSuggestion(formData: FormData): Promise<void> {
+  getServices().email.dismissSuggestion(Number(formData.get("emailId")));
+  revalidatePath(HOME_PATH);
+  revalidatePath(`${EMAIL_JOB_PATH_PREFIX}${Number(formData.get("jobId"))}`);
 }

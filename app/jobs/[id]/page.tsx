@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { EmailItem } from "@/app/_components/EmailItem";
 import { GenerateForm } from "@/app/jobs/[id]/GenerateForm";
 import { DOCUMENT_KINDS } from "@/lib/constants";
 import { getServices } from "@/lib/container";
@@ -15,10 +16,11 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
   await connection();
   const jobId = Number((await params).id);
   if (!Number.isInteger(jobId) || jobId <= 0) notFound();
-  const { dashboard, documents } = getServices();
+  const { dashboard, documents, email } = getServices();
   const job = dashboard.getCompareJobs([jobId])[0];
   if (!job) notFound();
   const stored = documents.getDocuments(jobId);
+  const jobEmails = email.getJobEmails(jobId);
   return (
     <div className="flex flex-col gap-4">
       <Link href="/" className="text-sm underline">
@@ -39,6 +41,16 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           </a>
         )}
       </section>
+      {jobEmails.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Emails about this job</h2>
+          <ul className="flex flex-col gap-2">
+            {jobEmails.map((item) => (
+              <EmailItem key={item.id} email={item} showJob={false} />
+            ))}
+          </ul>
+        </section>
+      )}
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">CV and interest letter (ATS format)</h2>
         <GenerateForm jobId={jobId} hasDocuments={stored.length > 0} />

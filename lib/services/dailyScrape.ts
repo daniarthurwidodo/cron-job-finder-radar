@@ -40,12 +40,13 @@ export async function runScraper({
 }
 
 export async function runDailyScrape(): Promise<ScrapeSummary[]> {
-  const { ingest, scrapeRuns, financials, exchangeRateService } = getServices();
+  const { ingest, scrapeRuns, financials, exchangeRateService, email } = getServices();
   await exchangeRateService.refresh();
   const summaries: ScrapeSummary[] = [];
   for (const scraper of SCRAPERS) {
     summaries.push(await runScraper({ scraper, ingestService: ingest, scrapeRuns }));
   }
   financials.recalculateAll();
+  await email.syncIfConnected();
   return summaries;
 }
