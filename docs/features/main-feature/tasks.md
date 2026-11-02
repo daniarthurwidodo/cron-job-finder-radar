@@ -49,15 +49,16 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] Checkpoint: approve Phase 3 (waiting for user review). Sources live: MyCareersFuture, Michael Page SG
 
 ## Phase 4 — Dashboard
-- [ ] Install Tailwind CSS → verify: utility class renders on a page
-- [ ] Daily scrape activity panel (PRD D8): latest run + per-day history per source (found / new / duplicates / filtered / invalid / error), "New today" list sorted by priority → verify: after a run the panel matches `scrape_runs`; a source with an error shows its message
-- [ ] Daily visibility rule (PRD D9): main list = jobs first saved on the latest run day + all tracked-status jobs; older untracked jobs hidden → verify: a job saved yesterday and untouched is absent; the same job after Bookmark is present; a missed run day does not empty the list; jobs from both MyCareersFuture and Michael Page appear under the same rule; one failing source does not hide the others
-- [ ] History view by day (PRD D10) → verify: picking yesterday shows only yesterday's new jobs
-- [ ] Jobs table: filter (country, stack, seniority, status), sort (savings, score), search → verify: manual check in browser
-- [ ] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload
-- [ ] Compare modal, up to 4 jobs (gross/net IDR, savings, stack overlap, work mode, visa) → verify: manual check
-- [ ] Settings page: CoL benchmarks, CV work-authorization wording per country, LinkedIn on/off → verify: edit persists
-- [ ] Checkpoint: approve Phase 4
+- [x] Install Tailwind CSS → verify: utility class renders on a page
+- [x] Daily scrape activity panel (PRD D8): latest run + per-day history per source (found / new / duplicates / filtered / invalid / error), "New today" list sorted by priority → verify: after a run the panel matches `scrape_runs`; a source with an error shows its message
+- [x] Daily visibility rule (PRD D9): main list = jobs first saved on the latest run day + all tracked-status jobs; older untracked jobs hidden → verify: a job saved yesterday and untouched is absent; the same job after Bookmark is present; a missed run day does not empty the list; jobs from both MyCareersFuture and Michael Page appear under the same rule; one failing source does not hide the others
+- [x] History view by day (PRD D10) → verify: picking yesterday shows only yesterday's new jobs
+- [x] Jobs table paginated, 50 per page, filters kept across pages → verify: 103 jobs = 3 pages (50/50/3); page beyond last shows the last page
+- [x] Jobs table: filter (country, stack, seniority, status), sort (savings, score), search → verify: manual check in browser
+- [x] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload
+- [x] Compare modal, up to 4 jobs (gross/net IDR, savings, stack overlap, work mode, visa) → verify: manual check
+- [x] Settings page: CoL benchmarks → verified by test (edit recomputes savings). CV work-authorization wording per country moves to Phase 6; LinkedIn on/off dropped (LinkedIn skipped)
+- [ ] Checkpoint: approve Phase 4 (waiting for user review)
 
 ## Phase 5 — Google Calendar
 - [ ] Google Cloud project + OAuth credentials (user action) → verify: client id/secret in `.env.local`
@@ -73,3 +74,11 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] Interest letter generator → verify: uses only facts from reference CV
 - [ ] Store in `documents`, download from job detail → verify: manual check
 - [ ] Checkpoint: approve Phase 6
+
+## Phase 7 — Assisted apply queue (depends on Phase 6)
+- [ ] Migration `0003`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
+- [ ] Queue / unqueue action and Apply queue page with states (Needs documents, Ready, Applied, Skipped) → verify: queue a job, it appears; unqueue, it disappears; default is not queued
+- [ ] Generate documents for queued job on demand (reuses Phase 6) → verify: documents attached, state becomes Ready
+- [ ] "Start apply": headed browser opens apply page, pre-fills what the site adapter supports, stops → verify: manual run on one MyCareersFuture job and one Michael Page job; app never clicks submit
+- [ ] "I applied" confirmation moves job to Applied with date → verify: status and date persist
+- [ ] Checkpoint: approve Phase 7

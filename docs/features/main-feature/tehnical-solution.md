@@ -158,6 +158,14 @@ Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-
 - Render path: generated Markdown -> single-column HTML/CSS template -> PDF with text layer (and DOCX). Library choice in Phase 6.
 - Separate phase; depends on decisions in Open Questions.
 
+## 10a. Apply queue (assisted apply)
+
+- Data: `jobs.apply_queued_at TEXT NULL` (NULL = not queued) via migration `0003`; applied/skipped use the existing status pipeline plus a `Skipped` handling decision (reuse `archived` with a note, or add lookup row; decide at build time). Documents live in `documents` (Phase 6).
+- Flow: user queues job -> service ensures CV + letter exist (generate if missing) -> "Start apply" server action launches a **headed** (visible) browser via the shared `withBrowserPage` helper with `headless: false` -> adapter per site fills fields -> returns control; the page stays open for the user. App has no code path that clicks the final submit.
+- Adapters: one small function per source (`mycareersfuture`, `michaelpage_sg`) that maps CV fields to that site's form; unknown sites just open the URL.
+- Safety: a bot check or login wall is not handled by the app; the window stays open for the user. No application-site credentials are stored. Server action requires the explicit job id and only acts on queued jobs.
+- Depends on Phase 6 (CV + letter generation). Not started.
+
 ## 11. Security
 
 - `/api/cron/scrape` rejects without `Authorization: Bearer $CRON_SECRET` (constant-time compare).

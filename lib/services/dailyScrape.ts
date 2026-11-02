@@ -1,17 +1,9 @@
-import { getDb } from "@/lib/db";
+import { getServices } from "@/lib/container";
 import { logger } from "@/lib/logger";
-import { CompanyRepository } from "@/lib/repositories/companyRepository";
-import { JobRepository } from "@/lib/repositories/jobRepository";
-import { JobSourceRepository } from "@/lib/repositories/jobSourceRepository";
-import { ScrapeRunRepository, type ScrapeRunCounts } from "@/lib/repositories/scrapeRunRepository";
-import { ColBenchmarkRepository } from "@/lib/repositories/colBenchmarkRepository";
-import { ExchangeRateRepository } from "@/lib/repositories/exchangeRateRepository";
-import { fetchRatesToIdr } from "@/lib/fx/exchangeRateClient";
-import { ExchangeRateService } from "@/lib/services/exchangeRateService";
-import { FinancialService } from "@/lib/services/financialService";
+import type { IngestService } from "@/lib/services/ingestService";
+import type { ScrapeRunCounts, ScrapeRunRepository } from "@/lib/repositories/scrapeRunRepository";
 import { michaelPageScraper } from "@/lib/scrapers/michaelpage";
 import { mycareersfutureScraper } from "@/lib/scrapers/mycareersfuture";
-import { IngestService } from "@/lib/services/ingestService";
 import type { Scraper } from "@/lib/types";
 
 export interface ScrapeSummary {
@@ -48,26 +40,12 @@ export async function runScraper({
 }
 
 export async function runDailyScrape(): Promise<ScrapeSummary[]> {
-  const db = getDb();
-  const ingestService = new IngestService({
-    companies: new CompanyRepository(db),
-    jobs: new JobRepository(db),
-    jobSources: new JobSourceRepository(db),
-    runInTransaction: (work) => db.transaction(work)(),
-  });
-  const scrapeRuns = new ScrapeRunRepository(db);
-  const exchangeRates = new ExchangeRateRepository(db);
-  const financialService = new FinancialService({
-    jobs: new JobRepository(db),
-    exchangeRates,
-    colBenchmarks: new ColBenchmarkRepository(db),
-    runInTransaction: (work) => db.transaction(work)(),
-  });
-  await new ExchangeRateService(exchangeRates, fetchRatesToIdr).refresh();
+  const { ingest, scrapeRuns, financials, exchangeRateService } = getServices();
+  await exchangeRateService.refresh();
   const summaries: ScrapeSummary[] = [];
   for (const scraper of SCRAPERS) {
-    summaries.push(await runScraper({ scraper, ingestService, scrapeRuns }));
+    summaries.push(await runScraper({ scraper, ingestService: ingest, scrapeRuns }));
   }
-  financialService.recalculateAll();
+  financials.recalculateAll();
   return summaries;
 }

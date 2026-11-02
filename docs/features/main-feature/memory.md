@@ -41,6 +41,10 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Dashboard daily rule: main list = jobs first saved on the latest run day + jobs in tracked statuses (bookmarked/applied/interviewing/offer). Older untracked jobs are hidden, not deleted. Day = latest run date. Applies to all job boards with one shared rule.
 
+- 2026-11-02: Auto-apply = ASSISTED apply (user chose). App collects only; user queues a job; app prepares ATS CV + letter, opens a headed browser, pre-fills, STOPS; user clicks Submit. Never auto-submit, never bypass login/CAPTCHA. Phase 7, after Phase 6.
+
+- 2026-11-02: Phase 4 dashboard built: / (scrape panel, daily rule, filters, 50/page, status change), /compare (max 4), /settings (CoL). Kanban (D5) and charts (D7) not built (P2). Verified with 51 tests, HTTP checks on real data, and a headless-Chrome click-through of status change + compare.
+
 ## Open questions
 - None.
 

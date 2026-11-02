@@ -35,6 +35,14 @@ Scrapers use plain headless Chrome with default identity. If a page shows a bot 
 | `.docx` CV in `docs/` is not git-ignored and holds contact details | Personal data could be committed | Move to `data/` or add to `.gitignore` |
 | CV says "over 8 years"; LinkedIn and CV dates differ (titles, Allianz end date, etc.) | Generated CV repeats whichever source is used | User picks the correct version, then update `data/reference-cv.md` |
 
+## Assisted apply (Phase 7) risks
+| Item | Note |
+| :--- | :--- |
+| Depends on Phase 6 CV + letter generation | Not started; apply queue is useless without it |
+| MyCareersFuture apply needs Singpass login | User logs in inside the opened window; app cannot and will not automate it |
+| Blocked boards (JobStreet, SEEK, Robert Walters) | Automation cannot open them; "Start apply" only opens the link in the user's normal browser |
+| Site form changes break adapters | One adapter per source, fails safe by just opening the page |
+
 ## Resolved
 - Reference CV format and location (Markdown, `data/reference-cv.md`).
 - Dashboard login, hosting, LinkedIn approach, contract roles, UI kit (see `memory.md`).

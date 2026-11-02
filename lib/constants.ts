@@ -252,3 +252,6 @@ export const RECENT_SCRAPE_RUNS_LIMIT = 24;
 export const HISTORY_DAYS_LIMIT = 30;
 export const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const SEARCH_MAX_LENGTH = 100;
+
+export const LIST_PAGE_SIZE = 50;
+export const FIRST_PAGE = 1;

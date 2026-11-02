@@ -15,6 +15,10 @@ export interface ScrapeRunRecord extends ScrapeRunCounts {
   errorMessage: string | null;
 }
 
+export interface ScrapeRunRow extends ScrapeRunRecord {
+  startedAt: string;
+}
+
 export class ScrapeRunRepository {
   constructor(private readonly db: Database.Database) {}
 
@@ -45,5 +49,23 @@ export class ScrapeRunRepository {
          FROM scrape_runs WHERE id = ?`,
       )
       .get(id) as ScrapeRunRecord | undefined;
+  }
+
+  listRecent(limit: number): ScrapeRunRow[] {
+    return this.db
+      .prepare(
+        `SELECT id, source_code AS sourceCode, started_at AS startedAt, finished_at AS finishedAt,
+                found_count AS found, inserted_count AS inserted, duplicate_count AS duplicates,
+                filtered_count AS filtered, invalid_count AS invalid, error_message AS errorMessage
+         FROM scrape_runs ORDER BY id DESC LIMIT ?`,
+      )
+      .all(limit) as ScrapeRunRow[];
+  }
+
+  findLatestFinishedDay(): string | undefined {
+    const row = this.db
+      .prepare("SELECT date(MAX(started_at)) AS day FROM scrape_runs WHERE finished_at IS NOT NULL")
+      .get() as { day: string | null };
+    return row.day ?? undefined;
   }
 }

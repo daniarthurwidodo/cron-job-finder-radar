@@ -23,7 +23,7 @@ Expat Job Radar is a personal tool that every day collects expat-friendly tech j
 
 **Non-goals (v1)**
 - Multi-user accounts, sharing, or a public product.
-- Auto-applying to jobs.
+- Unattended auto-submit of applications. Applying is "assisted": the app prepares everything, the user presses Submit (see 5.8).
 - Mobile app (responsive web is enough).
 - Immigration/visa legal advice. Visa data is informational only.
 
@@ -117,7 +117,7 @@ Tax tables carry their tax year and must be verified against official sources. A
 ### 5.5 Dashboard
 | ID | Requirement | Priority |
 | :--- | :--- | :--- |
-| D1 | Table view with filter by country, stack, seniority, status, and sort by savings, match score, priority | P0 |
+| D1 | Table view with filter by country, stack, seniority, status, and sort by savings, match score, priority. **50 jobs per page** with Previous / Next and "Page X of Y"; filters and sort are kept when changing page | P0 |
 | D2 | Search by title or company | P0 |
 | D3 | Status pipeline: Discovered, Bookmarked, Applied, Interviewing, Offer, Rejected, Archived; status can be changed per job | P0 |
 | D4 | Compare up to 4 jobs side by side: gross and net salary (IDR), monthly savings, stack overlap %, work mode, visa sponsorship | P1 |
@@ -156,6 +156,21 @@ Tax tables carry their tax year and must be verified against official sources. A
 8. Work-authorization line in plain text under the contact details.
 9. File name `Firstname-Lastname-CV-Company.pdf`, no spaces or special characters.
 10. 2 pages maximum.
+
+### 5.8 Apply queue (assisted apply)
+The app only collects and ranks jobs. Nothing is applied to unless the user picks the job.
+
+| ID | Requirement | Priority |
+| :--- | :--- | :--- |
+| A1 | The user can mark any job "Apply" (adds it to the apply queue) and unmark it. Default for every job is not queued | P1 |
+| A2 | For a queued job the app generates the ATS CV and interest letter (5.7) and keeps them attached to the job | P1 |
+| A3 | "Start apply" opens the job's real apply page in a visible browser window, pre-fills the fields it can from the reference CV (name, email, phone, links, CV upload, cover letter text), and stops | P1 |
+| A4 | The user reviews, handles any login / Singpass / CAPTCHA / questions themselves, and clicks Submit. The app never clicks the final submit and never solves or bypasses CAPTCHA or bot checks | P1 |
+| A5 | After the user confirms "I applied", the job moves to status Applied with the date; the user can also mark it "Skipped" | P1 |
+| A6 | Credentials are never stored by the app for application sites; the user signs in inside the browser window | P1 |
+| A7 | Apply queue page lists queued jobs with state: Needs documents, Ready to apply, Applied, Skipped | P1 |
+
+Limits to expect: MyCareersFuture applies need Singpass login; Michael Page uses its own form; blocked boards (todos.md) cannot be opened by automation at all and will only open the link in the user's normal browser.
 
 ## 6. Non-Functional Requirements
 - **Reliability:** a daily run completes even if some sources fail; errors are visible per run.

@@ -1,3 +1,28 @@
-export default function Home() {
-  return <p className="text-sm">Dashboard loading...</p>;
+import { connection } from "next/server";
+import { FilterBar } from "@/app/_components/FilterBar";
+import { JobTable } from "@/app/_components/JobTable";
+import { Pagination } from "@/app/_components/Pagination";
+import { ScrapePanel } from "@/app/_components/ScrapePanel";
+import { getServices } from "@/lib/container";
+import { parseJobFilters, type RawSearchParams } from "@/lib/dashboard/filters";
+
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
+  await connection();
+  const filters = parseJobFilters(await searchParams);
+  const home = getServices().dashboard.getHome(filters);
+  return (
+    <div className="flex flex-col gap-5">
+      <ScrapePanel runs={home.runs} newJobsCount={home.totalCount} day={home.day} />
+      <section>
+        <h2 className="mb-2 text-lg font-semibold">
+          {home.isHistory ? `Jobs first saved on ${home.day}` : `New on ${home.day} + tracked jobs`} ({home.totalCount})
+        </h2>
+        <FilterBar filters={filters} days={home.days} />
+        <div className="mt-3">
+          <JobTable jobs={home.jobs} day={home.day} />
+        </div>
+        <Pagination filters={filters} page={home.page} pageCount={home.pageCount} totalCount={home.totalCount} />
+      </section>
+    </div>
+  );
 }

@@ -1,0 +1,143 @@
+import type Database from "better-sqlite3";
+import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
+
+export interface DashboardJob {
+  id: number;
+  title: string;
+  companyName: string;
+  city: string;
+  countryCode: string;
+  workModeCode: string;
+  seniorityCode: string;
+  statusCode: string;
+  stackMatchScore: number;
+  priorityScore: number;
+  currencyCode: string;
+  salaryMinMonthlyMinor: number | null;
+  salaryMaxMonthlyMinor: number | null;
+  grossMonthlyIdr: number | null;
+  taxMonthlyIdr: number | null;
+  colMonthlyIdr: number | null;
+  netSavingsMonthlyIdr: number | null;
+  hasVisaSponsorship: number;
+  createdAt: string;
+  sourceUrl: string | null;
+  techTags: string | null;
+}
+
+export type Visibility = { mode: "main"; day: string } | { mode: "history"; day: string };
+
+export interface JobListQuery {
+  visibility: Visibility;
+  countryCode?: string;
+  seniorityCode?: string;
+  statusCode?: string;
+  search?: string;
+  sortKey: string;
+  page: number;
+}
+
+const FROM_DASHBOARD_JOB_SQL = `FROM jobs j
+  JOIN companies co ON co.id = j.company_id
+  JOIN countries c ON c.id = j.country_id
+  JOIN work_modes w ON w.id = j.work_mode_id
+  JOIN seniorities s ON s.id = j.seniority_id
+  JOIN job_statuses st ON st.id = j.status_id
+  WHERE j.deleted_at IS NULL`;
+
+const SELECT_DASHBOARD_JOB_SQL = `
+  SELECT j.id, j.title, co.name AS companyName, j.city, c.code AS countryCode, w.code AS workModeCode,
+         s.code AS seniorityCode, st.code AS statusCode, j.stack_match_score AS stackMatchScore,
+         j.priority_score AS priorityScore, j.currency_code AS currencyCode,
+         j.salary_min_monthly_minor AS salaryMinMonthlyMinor, j.salary_max_monthly_minor AS salaryMaxMonthlyMinor,
+         j.est_gross_monthly_idr AS grossMonthlyIdr, j.est_tax_monthly_idr AS taxMonthlyIdr,
+         j.est_col_monthly_idr AS colMonthlyIdr, j.est_net_savings_monthly_idr AS netSavingsMonthlyIdr,
+         j.has_visa_sponsorship AS hasVisaSponsorship, j.created_at AS createdAt,
+         (SELECT js.source_url FROM job_sources js WHERE js.job_id = j.id ORDER BY js.id LIMIT 1) AS sourceUrl,
+         (SELECT group_concat(t.tech_tag, ', ') FROM job_tech_tags t WHERE t.job_id = j.id) AS techTags
+  ${FROM_DASHBOARD_JOB_SQL}`;
+
+const SORT_SQL: Record<string, string> = {
+  [SORT_KEYS.PRIORITY]: "j.priority_score DESC",
+  [SORT_KEYS.SAVINGS]: "j.est_net_savings_monthly_idr IS NULL, j.est_net_savings_monthly_idr DESC",
+  [SORT_KEYS.STACK]: "j.stack_match_score DESC",
+  [SORT_KEYS.NEWEST]: "j.created_at DESC",
+};
+const TIE_BREAK_SQL = "j.id DESC";
+const LIKE_ESCAPE_PATTERN = /[\\%_]/g;
+
+function quoteList(values: readonly string[]): string {
+  return values.map((value) => `'${value}'`).join(", ");
+}
+
+function buildVisibilitySql(visibility: Visibility): string {
+  if (visibility.mode === "history") return "date(j.created_at) = @day";
+  return `(date(j.created_at) = @day OR st.code IN (${quoteList(TRACKED_JOB_STATUSES)}))
+          AND st.code NOT IN (${quoteList(HIDDEN_JOB_STATUSES)})`;
+}
+
+export class JobQueryRepository {
+  constructor(private readonly db: Database.Database) {}
+
+  list(query: JobListQuery): DashboardJob[] {
+    const { whereSql, params } = this.buildFilter(query);
+    const orderBy = `${SORT_SQL[query.sortKey] ?? SORT_SQL[SORT_KEYS.PRIORITY]}, ${TIE_BREAK_SQL}`;
+    const sql = `${SELECT_DASHBOARD_JOB_SQL} AND ${whereSql} ORDER BY ${orderBy} LIMIT @limit OFFSET @offset`;
+    const offset = (query.page - 1) * LIST_PAGE_SIZE;
+    return this.db.prepare(sql).all({ ...params, limit: LIST_PAGE_SIZE, offset }) as DashboardJob[];
+  }
+
+  count(query: JobListQuery): number {
+    const { whereSql, params } = this.buildFilter(query);
+    const sql = `SELECT COUNT(j.id) AS total ${FROM_DASHBOARD_JOB_SQL} AND ${whereSql}`;
+    return (this.db.prepare(sql).get(params) as { total: number }).total;
+  }
+
+  private buildFilter(query: JobListQuery): { whereSql: string; params: Record<string, string> } {
+    const conditions = [buildVisibilitySql(query.visibility)];
+    const params: Record<string, string> = { day: query.visibility.day };
+    if (query.countryCode) {
+      conditions.push("c.code = @countryCode");
+      params.countryCode = query.countryCode;
+    }
+    if (query.seniorityCode) {
+      conditions.push("s.code = @seniorityCode");
+      params.seniorityCode = query.seniorityCode;
+    }
+    if (query.statusCode) {
+      conditions.push("st.code = @statusCode");
+      params.statusCode = query.statusCode;
+    }
+    if (query.search) {
+      conditions.push("(j.title LIKE @search ESCAPE '\\' OR co.name LIKE @search ESCAPE '\\')");
+      params.search = `%${query.search.replace(LIKE_ESCAPE_PATTERN, "\\$&")}%`;
+    }
+    return { whereSql: conditions.join(" AND "), params };
+  }
+
+  findByIds(ids: number[]): DashboardJob[] {
+    if (ids.length === 0) return [];
+    const placeholders = ids.map(() => "?").join(", ");
+    const rows = this.db
+      .prepare(`${SELECT_DASHBOARD_JOB_SQL} AND j.id IN (${placeholders})`)
+      .all(...ids) as DashboardJob[];
+    return ids.flatMap((id) => rows.filter((row) => row.id === id));
+  }
+
+  listDays(limit: number): string[] {
+    const rows = this.db
+      .prepare("SELECT DISTINCT date(created_at) AS day FROM jobs WHERE deleted_at IS NULL ORDER BY day DESC LIMIT ?")
+      .all(limit) as { day: string }[];
+    return rows.map((row) => row.day);
+  }
+
+  updateStatus({ jobId, statusCode }: { jobId: number; statusCode: string }): boolean {
+    const result = this.db
+      .prepare(
+        `UPDATE jobs SET status_id = (SELECT id FROM job_statuses WHERE code = ?), updated_at = CURRENT_TIMESTAMP
+         WHERE id = ? AND deleted_at IS NULL`,
+      )
+      .run(statusCode, jobId);
+    return result.changes > 0;
+  }
+}
