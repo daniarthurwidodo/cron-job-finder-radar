@@ -61,6 +61,8 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Sort direction (asc/desc) added; default desc; jobs without salary always last.
 
+- 2026-11-02: Filter form submits via client-side navigation (no full reload). Needs JavaScript; the page already streams content with scripts, so a no-JS fallback was never real.
+
 ## Open questions
 - None.
 

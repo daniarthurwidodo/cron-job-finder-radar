@@ -150,7 +150,8 @@ function FilterRow({ filters }: { filters: JobFilters }) {
   );
 }
 
-export function JobTable({ jobs, day, filters }: { jobs: DashboardJob[]; day: string; filters: JobFilters }) {
+// filterKey remounts the header inputs when the filters change, so they never keep stale values after a soft navigation.
+export function JobTable({ jobs, day, filters, filterKey }: { jobs: DashboardJob[]; day: string; filters: JobFilters; filterKey: string }) {
   return (
     <div>
       <form id={COMPARE_FORM_ID} action="/compare" method="get" className="mb-2">
@@ -172,7 +173,7 @@ export function JobTable({ jobs, day, filters }: { jobs: DashboardJob[]; day: st
                 <th className="pr-3">Priority</th>
                 <th>Status</th>
               </tr>
-              <FilterRow filters={filters} />
+              <FilterRow key={filterKey} filters={filters} />
             </thead>
             <tbody>
               {jobs.map((job) => (

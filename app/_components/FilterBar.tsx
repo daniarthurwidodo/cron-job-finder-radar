@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition, type FormEvent } from "react";
 import { FILTER_FORM_ID, SORT_DIRECTIONS, SORT_KEYS } from "@/lib/constants";
 import type { JobFilters } from "@/lib/dashboard/filters";
 import { SORT_LABELS } from "@/lib/dashboard/format";
@@ -13,11 +17,27 @@ function pick(labels: Record<string, string>, codes: string[]): Record<string, s
   return Object.fromEntries(codes.map((code) => [code, labels[code]]));
 }
 
+const HOME_PATH = "/";
+
 // The column filters live in the table header and submit through this same form (form="filter-form").
+// Submitting navigates on the client (no full page reload); without JavaScript it is still a normal GET form.
 export function FilterBar({ filters, days }: { filters: JobFilters; days: string[] }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const sortOptions = pick(SORT_LABELS, Object.values(SORT_KEYS));
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    for (const [key, value] of new FormData(event.currentTarget)) {
+      if (typeof value === "string" && value.trim() !== "") params.set(key, value.trim());
+    }
+    const query = params.toString();
+    startTransition(() => router.push(query ? `${HOME_PATH}?${query}` : HOME_PATH, { scroll: false }));
+  }
+
   return (
-    <form id={FILTER_FORM_ID} action="/" method="get" className="flex flex-wrap items-center gap-2">
+    <form id={FILTER_FORM_ID} action={HOME_PATH} method="get" onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
       <label className="flex items-center gap-1 text-sm">
         Sort
         <select name="sort" defaultValue={filters.sortKey} className={FIELD_CLASS}>
@@ -55,7 +75,9 @@ export function FilterBar({ filters, days }: { filters: JobFilters; days: string
       <Link href="/" className="text-sm underline">
         Reset all
       </Link>
-      <span className="text-xs text-slate-500">Column filters are in the table header (press Enter or Apply).</span>
+      <span className="text-xs text-slate-500" aria-live="polite">
+        {isPending ? "Updating..." : "Column filters are in the table header (press Enter or Apply)."}
+      </span>
     </form>
   );
 }
