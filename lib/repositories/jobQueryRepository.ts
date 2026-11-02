@@ -1,5 +1,5 @@
 import type Database from "better-sqlite3";
-import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
+import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SALARY_FILTER, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
 
 export interface DashboardJob {
   id: number;
@@ -33,6 +33,11 @@ export interface JobListQuery {
   countryCode?: string;
   seniorityCode?: string;
   statusCode?: string;
+  workModeCode?: string;
+  salary?: string;
+  minSavingsIdr?: number;
+  minStack?: number;
+  minPriority?: number;
   search?: string;
   sortKey: string;
   page: number;
@@ -64,6 +69,11 @@ const SORT_SQL: Record<string, string> = {
   [SORT_KEYS.STACK]: "j.stack_match_score DESC",
   [SORT_KEYS.NEWEST]: "j.created_at DESC",
 };
+const MINIMUM_FILTERS = [
+  { queryKey: "minSavingsIdr", column: "j.est_net_savings_monthly_idr" },
+  { queryKey: "minStack", column: "j.stack_match_score" },
+  { queryKey: "minPriority", column: "j.priority_score" },
+] as const;
 const TIE_BREAK_SQL = "j.id DESC";
 const LIKE_ESCAPE_PATTERN = /[\\%_]/g;
 
@@ -94,9 +104,9 @@ export class JobQueryRepository {
     return (this.db.prepare(sql).get(params) as { total: number }).total;
   }
 
-  private buildFilter(query: JobListQuery): { whereSql: string; params: Record<string, string> } {
+  private buildFilter(query: JobListQuery): { whereSql: string; params: Record<string, string | number> } {
     const conditions = [buildVisibilitySql(query.visibility)];
-    const params: Record<string, string> = { day: query.visibility.day };
+    const params: Record<string, string | number> = { day: query.visibility.day };
     if (query.countryCode) {
       conditions.push("c.code = @countryCode");
       params.countryCode = query.countryCode;
@@ -108,6 +118,18 @@ export class JobQueryRepository {
     if (query.statusCode) {
       conditions.push("st.code = @statusCode");
       params.statusCode = query.statusCode;
+    }
+    if (query.workModeCode) {
+      conditions.push("w.code = @workModeCode");
+      params.workModeCode = query.workModeCode;
+    }
+    if (query.salary === SALARY_FILTER.DISCLOSED) conditions.push("j.salary_min_monthly_minor IS NOT NULL");
+    if (query.salary === SALARY_FILTER.HIDDEN) conditions.push("j.salary_min_monthly_minor IS NULL");
+    for (const minimum of MINIMUM_FILTERS) {
+      const value = query[minimum.queryKey];
+      if (value === undefined) continue;
+      conditions.push(`${minimum.column} >= @${minimum.queryKey}`);
+      params[minimum.queryKey] = value;
     }
     if (query.search) {
       conditions.push("(j.title LIKE @search ESCAPE '\\' OR co.name LIKE @search ESCAPE '\\')");

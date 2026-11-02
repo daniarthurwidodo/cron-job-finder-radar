@@ -342,3 +342,5 @@ export const GOOGLE_VERIFIER_COOKIE = "google_oauth_verifier";
 export const GOOGLE_COOKIE_MAX_AGE_SECONDS = 600;
 export const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
 export const EMAIL_PANEL_RECENT_LIMIT = 10;
+export const SALARY_FILTER = { DISCLOSED: "yes", HIDDEN: "no" } as const;
+export const FILTER_FORM_ID = "filter-form";
