@@ -37,6 +37,10 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Blocked sources (bot check): JobStreet SG/MY, SEEK NZ, Robert Walters. Workhere down until early 2027. Never bypass bot checks. Tracked in `todos.md`.
 
+- 2026-11-02: User skipped remaining scrapers (Hiredly, Trade Me, Hays, Randstad, Monroe, Relocate.me, Tech in Asia, LinkedIn) and manual import. Live sources: MyCareersFuture + Michael Page SG.
+
+- 2026-11-02: Dashboard daily rule: main list = jobs first saved on the latest run day + jobs in tracked statuses (bookmarked/applied/interviewing/offer). Older untracked jobs are hidden, not deleted. Day = latest run date. Applies to all job boards with one shared rule.
+
 ## Open questions
 - None.
 

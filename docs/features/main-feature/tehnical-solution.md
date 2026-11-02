@@ -131,6 +131,8 @@ Conventions per R19: snake_case, plural tables, `INTEGER PRIMARY KEY AUTOINCREME
 
 Migrations: numbered `.sql` files with matching `down`, run by a small runner script on startup/`npm run migrate`. Logical FK relationships documented in migration comments. Delete of a job = soft delete; child cleanup done in service.
 
+Daily visibility rule (PRD D9): the list query is `jobs WHERE deleted_at IS NULL AND (date(created_at) = <latest run day> OR status IN (bookmarked, applied, interviewing, offer))`; rejected/archived excluded. `<latest run day>` = date of the latest finished `scrape_runs.started_at`. Both are computed in a service from `jobs.created_at` (ISO date, UTC) with the displayed day shown in the user's timezone; add an index on `jobs.created_at` when the dashboard is built. The query has no source filter, so the rule covers every board; "latest run day" is the newest finished run across all sources. Nothing is deleted: old jobs stay in the DB and the history view (D10) reads them.
+
 Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-source rows from `scrape_runs` (`started_at`, counts, `error_message`), "new today" = jobs whose `created_at` is on/after the latest successful run start, joined to companies/countries, ordered by `priority_score DESC`. Read goes through a service (presentation never calls repositories).
 
 ## 9. Deviations from PRD (and why)

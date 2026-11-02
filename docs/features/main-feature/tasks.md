@@ -1,6 +1,6 @@
 # Tasks — Expat Job Radar
 
-Legend: `[x]` done, `[ ]` todo. Each phase ends with a checkpoint: stop, review, approve before next phase.
+Legend: `[x]` done, `[ ]` todo, `[-]` skipped by user. Each phase ends with a checkpoint: stop, review, approve before next phase.
 Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and open risks: `todos.md`.
 
 ## Phase 0 — Project init
@@ -38,19 +38,21 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 
 ## Phase 3 — More scrapers
 - [x] Add headless browser (`playwright-core` + system Chrome/Chromium, stops on bot checks) → verified on Michael Page SG
-- [ ] hiredly, trademe → verify: each logs found/inserted counts
+- [-] hiredly, trademe → SKIPPED by user (2026-11-02)
 - [ ] jobstreet SG/MY, seek NZ, workhere, robert walters → BLOCKED, see `todos.md`
-- [ ] Relocate.me, Tech in Asia Jobs → verify: same
+- [-] Relocate.me, Tech in Asia Jobs → SKIPPED by user
 - [x] Michael Page SG → verified live (194 found, 31 saved)
-- [ ] Agencies: Randstad, Hays, Monroe → verify: same
+- [-] Agencies: Randstad, Hays, Monroe → SKIPPED by user
 - [ ] Robert Walters → BLOCKED (bot check), see `todos.md`
-- [ ] LinkedIn: logged-in scraper, creds/session in `.env.local`, on/off setting → verify: failure does not affect other sources
-- [ ] MNC / accredited employer flag on companies → verify: flagged list editable
-- [ ] Checkpoint: approve Phase 3
+- [-] LinkedIn → SKIPPED by user (no credentials supplied)
+- [-] MNC / accredited employer flag → deferred to Phase 4 settings page (column `is_mnc` exists, nothing sets it yet)
+- [ ] Checkpoint: approve Phase 3 (waiting for user review). Sources live: MyCareersFuture, Michael Page SG
 
 ## Phase 4 — Dashboard
 - [ ] Install Tailwind CSS → verify: utility class renders on a page
 - [ ] Daily scrape activity panel (PRD D8): latest run + per-day history per source (found / new / duplicates / filtered / invalid / error), "New today" list sorted by priority → verify: after a run the panel matches `scrape_runs`; a source with an error shows its message
+- [ ] Daily visibility rule (PRD D9): main list = jobs first saved on the latest run day + all tracked-status jobs; older untracked jobs hidden → verify: a job saved yesterday and untouched is absent; the same job after Bookmark is present; a missed run day does not empty the list; jobs from both MyCareersFuture and Michael Page appear under the same rule; one failing source does not hide the others
+- [ ] History view by day (PRD D10) → verify: picking yesterday shows only yesterday's new jobs
 - [ ] Jobs table: filter (country, stack, seniority, status), sort (savings, score), search → verify: manual check in browser
 - [ ] Status pipeline (Discovered → … → Rejected/Archived) with Server Action → verify: status persists on reload
 - [ ] Compare modal, up to 4 jobs (gross/net IDR, savings, stack overlap, work mode, visa) → verify: manual check

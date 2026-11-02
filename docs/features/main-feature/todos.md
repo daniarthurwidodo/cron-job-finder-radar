@@ -15,7 +15,7 @@ Last updated: 2026-11-02. Open items that are not part of the normal phase check
 
 Built and verified live: MyCareersFuture (API), Michael Page SG (headless browser: 194 found, 31 saved on first run, most filtered for no stack keyword because list summaries are short).
 
-Reachable (no block seen), not yet built: Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
+Skipped by user decision (2026-11-02), not built: Hiredly MY, Trade Me NZ, Hays SG, Randstad SG, Monroe, Relocate.me, Tech in Asia, LinkedIn. Manual import for blocked boards: also skipped. Reachable when wanted later: Hays SG, Randstad SG (search "node.js" returned 0 results, needs wider query), Hiredly MY, Trade Me NZ, Relocate.me, Tech in Asia, Monroe Consulting.
 
 ## Policy for bot checks
 Scrapers use plain headless Chrome with default identity. If a page shows a bot check, CAPTCHA, or "automation detected" page, the scraper stops with `BotChallengeError`, records it in `scrape_runs.error_message`, and the source is listed above. No stealth plugins, UA spoofing, proxy rotation, or CAPTCHA solving.

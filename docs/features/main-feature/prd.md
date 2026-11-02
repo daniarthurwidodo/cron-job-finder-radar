@@ -124,6 +124,8 @@ Tax tables carry their tax year and must be verified against official sources. A
 | D5 | Kanban view of the pipeline | P2 |
 | D6 | Settings page for CoL benchmarks | P1 |
 | D7 | Charts of salary and savings breakdown | P2 |
+| D9 | **Daily visibility rule.** The main job list shows only jobs first saved in the day's scrape ("new that day"). Older jobs drop off the main list. Jobs in a tracked status (Bookmarked, Applied, Interviewing, Offer) always stay visible regardless of age. "Day" means the calendar date of the latest scrape run, not the wall clock, so a missed run does not leave an empty list. Rejected and Archived jobs are hidden from the main list. **Applies to all job boards** (every current and future source) with one shared rule: a job first saved from board A today and also seen on board B counts once, as new today. If one board fails or is blocked that day, jobs from the other boards still show, and the failure is visible in the scrape panel (D8) | P0 |
+| D10 | History view: pick a previous day to see the jobs first saved that day | P1 |
 | D8 | **Daily scrape activity panel** on the dashboard home: for the latest run and a per-day history, show for each source the time, jobs found, new jobs saved, duplicates, filtered, invalid, and any error (including "blocked by bot check"). Also a "New today" list of the jobs first saved in the latest run, sorted by priority score. Failed or blocked sources are visible, not hidden | P0 |
 
 ### 5.6 Google Calendar
