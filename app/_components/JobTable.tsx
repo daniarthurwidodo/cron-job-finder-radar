@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { changeJobStatus } from "@/app/actions";
+import { changeJobStatus, queueJobForApply } from "@/app/actions";
 import { JOB_STATUSES, MAX_COMPARE_JOBS } from "@/lib/constants";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, SENIORITY_LABELS, STATUS_LABELS, WORK_MODE_LABELS } from "@/lib/dashboard/format";
 import type { DashboardJob } from "@/lib/repositories/jobQueryRepository";
@@ -49,9 +49,23 @@ function JobRow({ job, day }: { job: DashboardJob; day: string }) {
           {job.companyName} - {job.city}
         </div>
         {job.techTags && <div className="text-xs text-slate-500">{job.techTags}</div>}
-        <Link href={`/jobs/${job.id}`} className="text-xs underline">
-          CV and letter
-        </Link>
+        <div className="mt-1 flex items-center gap-3">
+          <Link href={`/jobs/${job.id}`} className="text-xs underline">
+            CV and letter
+          </Link>
+          {job.applyQueuedAt ? (
+            <Link href="/apply" className="text-xs text-green-700 underline">
+              In apply queue
+            </Link>
+          ) : (
+            <form action={queueJobForApply}>
+              <input type="hidden" name="jobId" value={job.id} />
+              <button type="submit" className="text-xs underline">
+                Queue to apply
+              </button>
+            </form>
+          )}
+        </div>
       </td>
       <td className="pr-3 text-xs">{labelOf({ labels: COUNTRY_LABELS, code: job.countryCode })}</td>
       <td className="pr-3 text-xs">

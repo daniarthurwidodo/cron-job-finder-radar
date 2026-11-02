@@ -51,6 +51,8 @@ Short, durable facts and decisions. Append new ones with date.
 
 - 2026-11-02: Phase 6 built with templates (no AI). Verified live on a real job: 2-page ATS PDF with text layer, letter, per-country work-authorization line (editable in Settings). DOCX deferred.
 
+- 2026-11-02: Phase 7 built: queue (opt-in per job), Apply queue page, Start apply (visible browser, pre-fill Michael Page only, never submits, no action on login pages), I applied / Skip / Remove. All phases except skipped ones (3 partly, 5) now built.
+
 ## Open questions
 - None.
 

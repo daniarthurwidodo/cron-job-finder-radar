@@ -52,7 +52,10 @@ Scrapers use plain headless Chrome with default identity. If a page shows a bot 
 ## Assisted apply (Phase 7) risks
 | Item | Note |
 | :--- | :--- |
-| Depends on Phase 6 CV + letter generation | Not started; apply queue is useless without it |
+| "Start apply" never run live with a visible window on a real form | Tested on a local fixture and by read-only detection of the real Michael Page "Apply" button. User should try one real job and report what the page does after "Apply" (it may need login or registration) |
+| Server must run on the machine you sit at | The window opens on the machine running the app; it would fail or be invisible on a remote host |
+| Temp CV PDF copies | Stored in OS temp for upload, removed after 24h on next Start apply |
+| A stray `next dev` (PID 73563, port 3000) was found running and unresponsive | Not started by me; left alone. Stop it yourself if it is stale (`kill 73563`) |
 | MyCareersFuture apply needs Singpass login | User logs in inside the opened window; app cannot and will not automate it |
 | Blocked boards (JobStreet, SEEK, Robert Walters) | Automation cannot open them; "Start apply" only opens the link in the user's normal browser |
 | Site form changes break adapters | One adapter per source, fails safe by just opening the page |

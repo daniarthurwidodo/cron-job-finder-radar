@@ -16,6 +16,8 @@ for unit in radar-web.service radar-scrape.service radar-scrape.timer; do
     "$REPO_DIR/deploy/systemd/$unit" > "$UNIT_DIR/$unit"
 done
 
+# "Start apply" opens a visible browser: the user service needs your desktop session variables.
+systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XAUTHORITY XDG_RUNTIME_DIR 2>/dev/null || true
 systemctl --user daemon-reload
 systemctl --user enable --now radar-web.service radar-scrape.timer
 echo "Installed. Check: systemctl --user list-timers radar-scrape.timer"

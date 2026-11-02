@@ -294,3 +294,5 @@ export const APPLY_FILL_PROFILE_SOURCES = [SOURCE_CODES.MICHAEL_PAGE_SG] as cons
 export const APPLY_LINK_PATTERN = /^\s*apply( now| for this job)?\s*$/i;
 export const APPLY_PAGE_SETTLE_MS = 2500;
 export const APPLY_TEMP_DIR_PREFIX = "radar-apply-";
+export const APPLY_ACTION_TIMEOUT_MS = 5000;
+export const APPLY_TEMP_MAX_AGE_MS = 24 * 60 * 60 * 1000;

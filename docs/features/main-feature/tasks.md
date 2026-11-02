@@ -79,9 +79,9 @@ Design details: `tehnical-solution.md`. Requirements: `prd.md`. Blockers and ope
 - [ ] Checkpoint: approve Phase 6 (waiting for user review)
 
 ## Phase 7 — Assisted apply queue (depends on Phase 6)
-- [ ] Migration `0004`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
-- [ ] Queue / unqueue action and Apply queue page with states (Needs documents, Ready, Applied, Skipped) → verify: queue a job, it appears; unqueue, it disappears; default is not queued
-- [ ] Generate documents for queued job on demand (reuses Phase 6) → verify: documents attached, state becomes Ready
-- [ ] "Start apply": headed browser opens apply page, pre-fills what the site adapter supports, stops → verify: manual run on one MyCareersFuture job and one Michael Page job; app never clicks submit
-- [ ] "I applied" confirmation moves job to Applied with date → verify: status and date persist
-- [ ] Checkpoint: approve Phase 7
+- [x] Migration `0004`: `jobs.apply_queued_at` (+ decide how Skipped is stored) → verify: up, down, up
+- [x] Queue / unqueue action and Apply queue page with states (Needs documents, Ready, Applied, Skipped) → verify: queue a job, it appears; unqueue, it disappears; default is not queued
+- [x] Generate documents for queued job on demand (reuses Phase 6) → verify: documents attached, state becomes Ready
+- [x] "Start apply": headed browser opens apply page, pre-fills what the site adapter supports, stops → verified on a local fixture form (fills fields, uploads CV, never clicks submit, does nothing on a login page) and read-only detection on a real Michael Page job page. NOT yet run live with a visible window and a real form: user to try one
+- [x] "I applied" confirmation moves job to Applied with date → verify: status and date persist
+- [ ] Checkpoint: approve Phase 7 (waiting for user review)

@@ -19,6 +19,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/" className="text-sm hover:underline">
               Dashboard
             </Link>
+            <Link href="/apply" className="text-sm hover:underline">
+              Apply queue
+            </Link>
             <Link href="/settings" className="text-sm hover:underline">
               Settings
             </Link>

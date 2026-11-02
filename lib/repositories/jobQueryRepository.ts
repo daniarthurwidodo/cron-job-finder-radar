@@ -21,6 +21,7 @@ export interface DashboardJob {
   netSavingsMonthlyIdr: number | null;
   hasVisaSponsorship: number;
   createdAt: string;
+  applyQueuedAt: string | null;
   sourceUrl: string | null;
   techTags: string | null;
 }
@@ -52,7 +53,7 @@ const SELECT_DASHBOARD_JOB_SQL = `
          j.salary_min_monthly_minor AS salaryMinMonthlyMinor, j.salary_max_monthly_minor AS salaryMaxMonthlyMinor,
          j.est_gross_monthly_idr AS grossMonthlyIdr, j.est_tax_monthly_idr AS taxMonthlyIdr,
          j.est_col_monthly_idr AS colMonthlyIdr, j.est_net_savings_monthly_idr AS netSavingsMonthlyIdr,
-         j.has_visa_sponsorship AS hasVisaSponsorship, j.created_at AS createdAt,
+         j.has_visa_sponsorship AS hasVisaSponsorship, j.created_at AS createdAt, j.apply_queued_at AS applyQueuedAt,
          (SELECT js.source_url FROM job_sources js WHERE js.job_id = j.id ORDER BY js.id LIMIT 1) AS sourceUrl,
          (SELECT group_concat(t.tech_tag, ', ') FROM job_tech_tags t WHERE t.job_id = j.id) AS techTags
   ${FROM_DASHBOARD_JOB_SQL}`;

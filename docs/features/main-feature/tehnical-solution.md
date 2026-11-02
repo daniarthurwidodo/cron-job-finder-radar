@@ -161,11 +161,12 @@ Dashboard scrape panel (PRD D8) reads existing data, no new tables: per-day per-
 
 ## 10a. Apply queue (assisted apply)
 
-- Data: `jobs.apply_queued_at TEXT NULL` (NULL = not queued) via migration `0004` (`0003` is documents); applied/skipped use the existing status pipeline plus a `Skipped` handling decision (reuse `archived` with a note, or add lookup row; decide at build time). Documents live in `documents` (Phase 6).
+- Data (migration `0004`): `jobs.apply_queued_at` (NULL = not queued), `jobs.apply_skipped_at`, `jobs.applied_at`. State is derived: applied > skipped > ready (CV + letter exist) > needs documents. "I applied" also sets the job status to Applied. Documents live in `documents` (Phase 6).
 - Flow: user queues job -> service ensures CV + letter exist (generate if missing) -> "Start apply" server action launches a **headed** (visible) browser via the shared `withBrowserPage` helper with `headless: false` -> adapter per site fills fields -> returns control; the page stays open for the user. App has no code path that clicks the final submit.
-- Adapters: one small function per source (`mycareersfuture`, `michaelpage_sg`) that maps CV fields to that site's form; unknown sites just open the URL.
+- Filler: one generic function (`fillApplicationForm`) matches fields by label/placeholder (first/last/full name, email, phone, LinkedIn, cover letter, CV upload), only fills empty visible fields, clicks only a link/button whose whole text is "Apply" / "Apply now", and does nothing if a password field is visible. Pre-fill is on for Michael Page SG; other sources just open the URL (MyCareersFuture needs Singpass). Old plan was: one small function per source (`mycareersfuture`, `michaelpage_sg`) that maps CV fields to that site's form; unknown sites just open the URL.
 - Safety: a bot check or login wall is not handled by the app; the window stays open for the user. No application-site credentials are stored. Server action requires the explicit job id and only acts on queued jobs.
-- Depends on Phase 6 (CV + letter generation). Not started.
+- Temp files: the CV PDF for upload is written to the OS temp dir (`radar-apply-*`); folders older than 24h are deleted on the next Start apply.
+- Linux: the visible window needs a display session. `install-systemd.sh` imports DISPLAY / WAYLAND_DISPLAY / XAUTHORITY into the user manager; if the service started before login it may need a restart after login.
 
 ## 11. Security
 

@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { FillReport } from "@/lib/apply/fillApplicationForm";
 import { getServices } from "@/lib/container";
 import { logger } from "@/lib/logger";
 
 const HOME_PATH = "/";
 const SETTINGS_PATH = "/settings";
+const APPLY_PATH = "/apply";
 
 export async function changeJobStatus(formData: FormData): Promise<void> {
   const jobId = Number(formData.get("jobId"));
@@ -44,4 +46,48 @@ export async function saveWorkAuthorization(formData: FormData): Promise<void> {
   const statement = String(formData.get("statement") ?? "");
   getServices().dashboard.updateWorkAuthorization({ countryCode, statement });
   revalidatePath(SETTINGS_PATH);
+}
+
+function readJobId(formData: FormData): number {
+  return Number(formData.get("jobId"));
+}
+
+export async function queueJobForApply(formData: FormData): Promise<void> {
+  getServices().apply.queueJob(readJobId(formData));
+  revalidatePath(HOME_PATH);
+  revalidatePath(APPLY_PATH);
+}
+
+export async function unqueueJobFromApply(formData: FormData): Promise<void> {
+  getServices().apply.unqueueJob(readJobId(formData));
+  revalidatePath(HOME_PATH);
+  revalidatePath(APPLY_PATH);
+}
+
+export async function skipQueuedJob(formData: FormData): Promise<void> {
+  getServices().apply.skipJob(readJobId(formData));
+  revalidatePath(APPLY_PATH);
+}
+
+export async function confirmJobApplied(formData: FormData): Promise<void> {
+  getServices().apply.confirmApplied(readJobId(formData));
+  revalidatePath(HOME_PATH);
+  revalidatePath(APPLY_PATH);
+}
+
+export interface StartApplyState {
+  error?: string;
+  report?: FillReport;
+}
+
+export async function startApply(_previous: StartApplyState, formData: FormData): Promise<StartApplyState> {
+  const jobId = readJobId(formData);
+  try {
+    const report = await getServices().apply.startApply(jobId);
+    revalidatePath(APPLY_PATH);
+    return { report };
+  } catch (error) {
+    logger.error("start apply failed", { jobId, error: String(error) });
+    return { error: error instanceof Error ? error.message : "Could not start apply" };
+  }
 }
