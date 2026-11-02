@@ -76,3 +76,7 @@ export function labelOf({ labels, code }: { labels: Record<string, string>; code
 export function formatMajorFromMinor(minor: number): number {
   return minor / MINOR_UNITS_PER_MAJOR_UNIT;
 }
+
+export function pick(labels: Record<string, string>, codes: string[]): Record<string, string> {
+  return Object.fromEntries(codes.map((code) => [code, labels[code]]));
+}

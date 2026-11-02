@@ -258,6 +258,7 @@ export const SEARCH_MAX_LENGTH = 100;
 
 export const LIST_PAGE_SIZE = 50;
 export const FIRST_PAGE = 1;
+export const DASHBOARD_PATH = "/dashboard";
 
 export const DOCUMENT_KINDS = {
   CV: "cv",
@@ -343,6 +344,6 @@ export const GOOGLE_COOKIE_MAX_AGE_SECONDS = 600;
 export const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
 export const EMAIL_PANEL_RECENT_LIMIT = 10;
 export const SALARY_FILTER = { DISCLOSED: "yes", HIDDEN: "no" } as const;
-export const FILTER_FORM_ID = "filter-form";
+export const COMPARE_FORM_ID = "compare-form";
 export const SORT_DIRECTIONS = { DESC: "desc", ASC: "asc" } as const;
 export const DEFAULT_SORT_DIRECTION = SORT_DIRECTIONS.DESC;

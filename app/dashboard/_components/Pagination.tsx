@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DASHBOARD_PATH } from "@/lib/constants";
 import { buildFilterQuery, type JobFilters } from "@/lib/dashboard/filters";
 
 const LINK_CLASS = "rounded border border-slate-400 px-3 py-1 text-sm";
@@ -6,7 +7,7 @@ const DISABLED_CLASS = "rounded border border-slate-200 px-3 py-1 text-sm text-s
 
 function pageHref({ filters, page }: { filters: JobFilters; page: number }): string {
   const query = buildFilterQuery({ filters, page });
-  return query ? `/?${query}` : "/";
+  return query ? `${DASHBOARD_PATH}?${query}` : DASHBOARD_PATH;
 }
 
 export function Pagination({ filters, page, pageCount, totalCount }: { filters: JobFilters; page: number; pageCount: number; totalCount: number }) {

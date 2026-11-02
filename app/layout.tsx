@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DASHBOARD_PATH } from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -10,13 +11,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
-      <body className="min-h-screen">
-        <header className="border-b border-slate-300 dark:border-slate-700">
-          <nav className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
-            <Link href="/" className="font-semibold">
+      <body className="flex min-h-screen flex-col md:flex-row">
+        <aside className="border-b border-slate-300 dark:border-slate-700 md:w-56 md:shrink-0 md:border-b-0 md:border-r">
+          <nav aria-label="Main" className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 md:sticky md:top-0 md:flex-col md:items-stretch md:gap-3 md:py-6">
+            <Link href={DASHBOARD_PATH} className="font-semibold">
               Expat Job Radar
             </Link>
-            <Link href="/" className="text-sm hover:underline">
+            <Link href={DASHBOARD_PATH} className="text-sm hover:underline">
               Dashboard
             </Link>
             <Link href="/apply" className="text-sm hover:underline">
@@ -26,8 +27,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               Settings
             </Link>
           </nav>
-        </header>
-        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+        </aside>
+        <main className="min-w-0 flex-1 px-4 py-6">{children}</main>
       </body>
     </html>
   );

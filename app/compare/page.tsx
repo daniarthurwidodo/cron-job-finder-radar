@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { MAX_COMPARE_JOBS } from "@/lib/constants";
+import { DASHBOARD_PATH, MAX_COMPARE_JOBS } from "@/lib/constants";
 import { getServices } from "@/lib/container";
 import { parseCompareIds, type RawSearchParams } from "@/lib/dashboard/filters";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, SENIORITY_LABELS, STATUS_LABELS, WORK_MODE_LABELS } from "@/lib/dashboard/format";
@@ -38,7 +38,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const jobs = getServices().dashboard.getCompareJobs(requestedIds);
   return (
     <div>
-      <Link href="/" className="text-sm underline">
+      <Link href={DASHBOARD_PATH} className="text-sm underline">
         Back to dashboard
       </Link>
       <h1 className="my-3 text-xl font-semibold">Compare jobs (up to {MAX_COMPARE_JOBS})</h1>

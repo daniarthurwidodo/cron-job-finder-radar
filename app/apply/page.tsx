@@ -2,7 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { StartApplyForm } from "@/app/apply/StartApplyForm";
 import { confirmJobApplied, skipQueuedJob, unqueueJobFromApply } from "@/app/actions";
-import { APPLY_STATES } from "@/lib/constants";
+import { APPLY_STATES, DASHBOARD_PATH } from "@/lib/constants";
 import { getServices } from "@/lib/container";
 import { COUNTRY_LABELS, labelOf } from "@/lib/dashboard/format";
 
@@ -36,7 +36,7 @@ export default async function ApplyQueuePage() {
       </p>
       {items.length === 0 ? (
         <p className="text-sm">
-          Nothing queued. Use &quot;Queue to apply&quot; on a job in the <Link href="/" className="underline">dashboard</Link>.
+          Nothing queued. Use &quot;Queue to apply&quot; on a job in the <Link href={DASHBOARD_PATH} className="underline">dashboard</Link>.
         </p>
       ) : (
         <table className="w-full text-left text-sm">

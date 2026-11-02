@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { EmailItem } from "@/app/_components/EmailItem";
 import { GenerateForm } from "@/app/jobs/[id]/GenerateForm";
-import { DOCUMENT_KINDS } from "@/lib/constants";
+import { DASHBOARD_PATH, DOCUMENT_KINDS } from "@/lib/constants";
 import { getServices } from "@/lib/container";
 import { COUNTRY_LABELS, formatIdr, formatSalaryRange, labelOf, STATUS_LABELS } from "@/lib/dashboard/format";
 
@@ -23,7 +23,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
   const jobEmails = email.getJobEmails(jobId);
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/" className="text-sm underline">
+      <Link href={DASHBOARD_PATH} className="text-sm underline">
         Back to dashboard
       </Link>
       <section>
