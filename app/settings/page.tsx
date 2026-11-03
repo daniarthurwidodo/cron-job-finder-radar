@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { GoogleSection } from "@/app/settings/GoogleSection";
+import { ResetJobsForm } from "@/app/settings/ResetJobsForm";
 import { saveColBenchmark, saveWorkAuthorization } from "@/app/actions";
 import { getServices } from "@/lib/container";
 import { COUNTRY_LABELS, formatMajorFromMinor, labelOf } from "@/lib/dashboard/format";
@@ -62,6 +63,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </button>
         </form>
       ))}
+      <div className="mt-6">
+        <ResetJobsForm />
+      </div>
     </div>
   );
 }

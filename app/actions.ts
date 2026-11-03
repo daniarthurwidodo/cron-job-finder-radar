@@ -5,7 +5,7 @@ import type { FillReport } from "@/lib/apply/fillApplicationForm";
 import { DASHBOARD_PATH } from "@/lib/constants";
 import { getServices } from "@/lib/container";
 import { logger } from "@/lib/logger";
-import { runDailyScrape } from "@/lib/services/dailyScrape";
+import { getScrapeJob } from "@/lib/services/scrapeJob";
 
 const SETTINGS_PATH = "/settings";
 const APPLY_PATH = "/apply";
@@ -125,16 +125,29 @@ export interface ScrapeNowState {
 }
 
 export async function runScrapeNow(_previous: ScrapeNowState, formData: FormData): Promise<ScrapeNowState> {
+  const sourceCodes = formData.getAll("sources").map(String);
+  if (sourceCodes.length === 0) return { error: "Select at least one board" };
+  const isStarted = getScrapeJob().start(sourceCodes);
+  revalidatePath(DASHBOARD_PATH);
+  return isStarted ? { message: "Scrape started in the background. The table below updates as each board finishes." } : { error: "A scrape is already running" };
+}
+
+export interface ResetJobsState {
+  error?: string;
+  message?: string;
+}
+
+export async function resetJobData(_previous: ResetJobsState, formData: FormData): Promise<ResetJobsState> {
+  if (getScrapeJob().isRunning()) return { error: "A scrape is running. Wait for it to finish, then reset." };
   try {
-    const summaries = await runDailyScrape(formData.getAll("sources").map(String));
-    const inserted = summaries.reduce((total, summary) => total + summary.counts.inserted, 0);
-    const failedCount = summaries.filter((summary) => summary.errorMessage).length;
-    return { message: `${inserted} new job(s) saved, ${failedCount} source(s) with errors.` };
-  } catch (error) {
-    logger.error("manual scrape failed", { error: String(error) });
-    return { error: error instanceof Error ? error.message : "Scrape failed" };
-  } finally {
+    const deletedCount = getServices().dashboard.resetJobData(String(formData.get("confirmation") ?? ""));
     revalidatePath(DASHBOARD_PATH);
+    revalidatePath(SETTINGS_PATH);
+    logger.info("job data reset", { deletedCount });
+    return { message: `Deleted ${deletedCount} job(s) and all job history. Settings were kept.` };
+  } catch (error) {
+    logger.error("job data reset failed", { error: String(error) });
+    return { error: error instanceof Error ? error.message : "Reset failed" };
   }
 }
 

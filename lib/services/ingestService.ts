@@ -46,6 +46,7 @@ function toJobInsert({ job, companyId, dedupHash }: { job: ScoredJob; companyId:
     salaryMinMonthlyMinor: job.salaryMinMonthlyMinor,
     salaryMaxMonthlyMinor: job.salaryMaxMonthlyMinor,
     stackMatchScore: job.stackMatch.score,
+    hasVisaSponsorship: job.hasVisaSponsorship ? 1 : 0,
     techTags: job.stackMatch.tags,
   };
 }

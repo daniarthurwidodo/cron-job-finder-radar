@@ -6,6 +6,7 @@ import {
   HYBRID_PATTERN,
   IMPLAUSIBLE_MONTHLY_SALARY,
   LEAD_TITLE_PATTERN,
+  NO_SPONSORSHIP_PATTERN,
   MCF_POSITION_LEVEL_SENIORITIES,
   MINOR_UNITS_PER_MAJOR_UNIT,
   MONTHS_PER_YEAR,
@@ -13,6 +14,7 @@ import {
   SALARY_PERIODS,
   SENIORITIES,
   SENIOR_TITLE_PATTERN,
+  SPONSORSHIP_PATTERN,
   WORK_MODES,
 } from "@/lib/constants";
 import type { NormalizedJob, RawJob, SalaryPeriod } from "@/lib/types";
@@ -66,6 +68,10 @@ function detectSeniority({ title, positionLevels }: { title: string; positionLev
   return DEFAULT_SENIORITY;
 }
 
+export function detectVisaSponsorship(text: string): boolean {
+  return SPONSORSHIP_PATTERN.test(text) && !NO_SPONSORSHIP_PATTERN.test(text);
+}
+
 function assertRequiredFields(rawJob: RawJob): void {
   if (!rawJob.title?.trim()) throw new Error(`Job ${rawJob.sourceJobId} has no title`);
   if (!rawJob.companyName?.trim()) throw new Error(`Job ${rawJob.sourceJobId} has no company`);
@@ -89,6 +95,7 @@ export function normalizeJob(rawJob: RawJob): NormalizedJob {
     workModeCode: detectWorkMode({ description, flexibleWorkArrangements: rawJob.flexibleWorkArrangements }),
     seniorityCode: detectSeniority({ title: rawJob.title, positionLevels: rawJob.positionLevels }),
     isContractOrTemporary: rawJob.employmentTypes.some((type) => CONTRACT_EMPLOYMENT_PATTERN.test(type)),
+    hasVisaSponsorship: detectVisaSponsorship(`${rawJob.title} ${description}`),
     skills: rawJob.skills,
     salaryMinMonthlyMinor: toMonthlyMinor({ amount: rawJob.salaryMin, period: rawJob.salaryPeriod }),
     salaryMaxMonthlyMinor: toMonthlyMinor({ amount: rawJob.salaryMax, period: rawJob.salaryPeriod }),

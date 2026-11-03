@@ -73,6 +73,9 @@ export const REJECTION_REASONS = {
 
 // Only these roles are kept: fullstack, frontend, web developer, React Native, AI engineer/developer (matched on the job title).
 export const TARGET_ROLE_PATTERN = /\b(full[\s-]?stack|front[\s-]?end|web\s+(developer|engineer|application|app)|website\s+developer|react[\s-]?native|ai\b[^,()]{0,30}\b(engineer|developer))\b/i;
+export const SPONSORSHIP_PATTERN = /\b(visa\s+sponsor(ship|ed)?|sponsorship\s+(is\s+)?(available|offered|provided)|(will|can|able\s+to)\s+sponsor|employer[\s-]sponsored|relocation\s+(support|assistance|package)|subclass\s*482|AEWV|accredited\s+employer)\b/i;
+export const NO_SPONSORSHIP_PATTERN = /\b(no|not|without|unable\s+to|cannot|can't|won't|unfortunately)\b[^.]{0,30}\bsponsor/i;
+export const SEEK_SPONSORSHIP_TERM = "visa sponsorship";
 export const ENTRY_TITLE_PATTERN = /\b(junior|intern|internship|trainee|graduate)\b/i;
 export const SENIOR_TITLE_PATTERN = /\b(senior|sr\.?)\b/i;
 export const LEAD_TITLE_PATTERN = /\b(lead|principal|staff|head)\b/i;
@@ -403,3 +406,14 @@ export const MS_PER_HOUR = 3_600_000;
 export const WEEKDAYS = { SUNDAY: 0, SATURDAY: 6 } as const;
 export const WORKDAY_START_HOUR = 10;
 export const WORKDAY_END_HOUR = 18;
+
+export const LOG_LEVEL_ENV_NAME = "LOG_LEVEL";
+export const DEFAULT_LOG_LEVEL = "info";
+export const LOG_REDACT_CENSOR = "[redacted]";
+// Matches these keys at the top level and one level down (pino paths), so credentials never reach the logs.
+export const LOG_REDACT_KEYS = ["password", "email", "token", "accessToken", "refreshToken", "authorization", "cookie", "secret", "clientSecret"];
+export const SCRAPE_POLL_INTERVAL_MS = 3000;
+
+export const RESET_CONFIRMATION_WORD = "RESET";
+// Tables emptied by "reset job data". Settings (benchmarks, work authorization, exchange rates, Google connection) are not listed on purpose.
+export const JOB_DATA_TABLES = ["job_emails", "documents", "job_tech_tags", "job_sources", "jobs", "companies", "scrape_runs", "email_sync_runs"] as const;

@@ -15,6 +15,7 @@ export interface JobInsert {
   salaryMinMonthlyMinor: number | null;
   salaryMaxMonthlyMinor: number | null;
   stackMatchScore: number;
+  hasVisaSponsorship: number;
   techTags: string[];
 }
 
@@ -33,7 +34,7 @@ export interface JobRecord {
 const INSERT_JOB_SQL = `
   INSERT INTO jobs (
     company_id, title, city, country_id, work_mode_id, seniority_id, status_id, description,
-    posted_at, dedup_hash, currency_code, salary_min_monthly_minor, salary_max_monthly_minor, stack_match_score
+    posted_at, dedup_hash, currency_code, salary_min_monthly_minor, salary_max_monthly_minor, stack_match_score, has_visa_sponsorship
   ) VALUES (
     @companyId, @title, @city,
     (SELECT id FROM countries WHERE code = @countryCode),
@@ -41,7 +42,7 @@ const INSERT_JOB_SQL = `
     (SELECT id FROM seniorities WHERE code = @seniorityCode),
     (SELECT id FROM job_statuses WHERE code = @statusCode),
     @description, @postedAt, @dedupHash, @currencyCode,
-    @salaryMinMonthlyMinor, @salaryMaxMonthlyMinor, @stackMatchScore
+    @salaryMinMonthlyMinor, @salaryMaxMonthlyMinor, @stackMatchScore, @hasVisaSponsorship
   )`;
 
 export interface FinancialInput {

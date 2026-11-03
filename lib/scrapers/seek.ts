@@ -7,6 +7,7 @@ import {
   SEEK_BASE_URLS,
   SEEK_CARD_SELECTOR,
   SEEK_MAX_PAGES,
+  SEEK_SPONSORSHIP_TERM,
   TARGET_ROLE_SEARCH_KEYWORDS,
   SEEK_UNDISCLOSED_COMPANY,
   SOURCE_CODES,
@@ -32,6 +33,8 @@ export const SEEK_AU_REGION: SeekRegion = {
   countryCode: COUNTRY_CODES.AUSTRALIA,
 };
 
+// Seek matches the search words against the whole ad, so adding the term keeps mostly ads that mention sponsorship.
+const SPONSORSHIP_KEYWORDS = TARGET_ROLE_SEARCH_KEYWORDS.map((keyword) => `${keyword} ${SEEK_SPONSORSHIP_TERM}`);
 const WORK_TYPE_PATTERN = /^This is an? (.+) job$/i;
 
 export interface SeekCard {
@@ -118,7 +121,7 @@ async function collectKeywordCards({ page, region, keyword }: { page: Page; regi
 async function fetchRegionJobs(region: SeekRegion): Promise<RawJob[]> {
   return withBrowserPage(async (page) => {
     const cardsById = new Map<string, SeekCard>();
-    for (const keyword of TARGET_ROLE_SEARCH_KEYWORDS) {
+    for (const keyword of SPONSORSHIP_KEYWORDS) {
       for (const card of await collectKeywordCards({ page, region, keyword })) {
         if (card.id && card.title) cardsById.set(card.id, card);
       }

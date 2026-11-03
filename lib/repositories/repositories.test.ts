@@ -29,6 +29,7 @@ function buildJobInsert(companyId: number): JobInsert {
     salaryMinMonthlyMinor: 800000,
     salaryMaxMonthlyMinor: null,
     stackMatchScore: 17,
+    hasVisaSponsorship: 1,
     techTags: ["Node.js", "TypeScript"],
   };
 }
@@ -84,4 +85,12 @@ test("scrape run start then finish records counts", () => {
   assert.equal(run?.inserted, 2);
   assert.equal(run?.errorMessage, null);
   assert.ok(run?.finishedAt);
+});
+
+test("job insert stores the visa sponsorship flag", () => {
+  const db = createDb();
+  const companyId = new CompanyRepository(db).insert({ name: "Acme", nameNormalized: "acme" });
+  const jobId = new JobRepository(db).insert(buildJobInsert(companyId));
+  const row = db.prepare("SELECT has_visa_sponsorship AS flag FROM jobs WHERE id = ?").get(jobId) as { flag: number };
+  assert.equal(row.flag, 1);
 });

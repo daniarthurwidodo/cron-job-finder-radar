@@ -6,7 +6,7 @@ import { SOURCE_LABELS } from "@/lib/dashboard/format";
 
 const INITIAL_STATE: ScrapeNowState = {};
 
-export function ScrapeNowForm({ sourceCodes }: { sourceCodes: string[] }) {
+export function ScrapeNowForm({ sourceCodes, isRunning }: { sourceCodes: string[]; isRunning: boolean }) {
   const [state, formAction, isPending] = useActionState(runScrapeNow, INITIAL_STATE);
   return (
     <form action={formAction} className="mb-3 flex flex-col gap-2">
@@ -19,8 +19,8 @@ export function ScrapeNowForm({ sourceCodes }: { sourceCodes: string[] }) {
           </label>
         ))}
       </fieldset>
-      <button type="submit" disabled={isPending} className="w-fit rounded bg-slate-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-slate-200 dark:text-slate-900">
-        {isPending ? "Scraping (may take a few minutes)..." : "Run daily scrape now"}
+      <button type="submit" disabled={isPending || isRunning} className="w-fit rounded bg-slate-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-slate-200 dark:text-slate-900">
+        {isRunning ? "Scrape running in background..." : "Run daily scrape now"}
       </button>
       {state.message && <p className="text-sm text-green-700">{state.message}</p>}
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}

@@ -36,6 +36,7 @@ export interface NormalizedJob {
   workModeCode: string;
   seniorityCode: string;
   isContractOrTemporary: boolean;
+  hasVisaSponsorship: boolean;
   skills: string[];
   salaryMinMonthlyMinor: number | null;
   salaryMaxMonthlyMinor: number | null;

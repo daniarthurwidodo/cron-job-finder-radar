@@ -10,7 +10,7 @@ import { selectScrapers } from "@/lib/services/dailyScrape";
 import { buildDedupHash, normalizeUrl } from "@/lib/services/dedup";
 import { IngestService } from "@/lib/services/ingestService";
 import { findRejectionReason, isTargetRole } from "@/lib/services/jobFilter";
-import { normalizeJob, stripHtml, toMonthlyMinor } from "@/lib/services/normalizer";
+import { detectVisaSponsorship, normalizeJob, stripHtml, toMonthlyMinor } from "@/lib/services/normalizer";
 import { matchStack } from "@/lib/services/stackMatch";
 import type { RawJob } from "@/lib/types";
 
@@ -159,4 +159,13 @@ test("selectScrapers runs everything by default, filters by source code, and rej
   assert.deepEqual(selectScrapers({ scrapers, sourceCodes: ["b"] }), [scrapers[1]]);
   assert.throws(() => selectScrapers({ scrapers, sourceCodes: [] }));
   assert.throws(() => selectScrapers({ scrapers, sourceCodes: ["zzz"] }));
+});
+
+test("detectVisaSponsorship flags offers and ignores refusals", () => {
+  assert.equal(detectVisaSponsorship("We offer visa sponsorship for the right candidate"), true);
+  assert.equal(detectVisaSponsorship("AEWV support and relocation assistance included"), true);
+  assert.equal(detectVisaSponsorship("Must have full work rights. Unfortunately we cannot offer visa sponsorship."), false);
+  assert.equal(detectVisaSponsorship("No sponsorship available"), false);
+  assert.equal(detectVisaSponsorship("Build React apps in a friendly team"), false);
+  assert.equal(detectVisaSponsorship(""), false);
 });

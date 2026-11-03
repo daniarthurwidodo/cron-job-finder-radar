@@ -1,5 +1,5 @@
 import type Database from "better-sqlite3";
-import { HIDDEN_JOB_STATUSES, LIST_PAGE_SIZE, SALARY_FILTER, SORT_DIRECTIONS, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
+import { HIDDEN_JOB_STATUSES, JOB_DATA_TABLES, LIST_PAGE_SIZE, SALARY_FILTER, SORT_DIRECTIONS, SORT_KEYS, TRACKED_JOB_STATUSES } from "@/lib/constants";
 
 export interface DashboardJob {
   id: number;
@@ -181,5 +181,15 @@ export class JobQueryRepository {
       )
       .run(statusCode, ...jobIds);
     return result.changes;
+  }
+
+  // Returns how many jobs were deleted. Runs as one transaction so a failure leaves the data untouched.
+  purgeJobData(): number {
+    const purge = this.db.transaction(() => {
+      const jobCount = (this.db.prepare("SELECT COUNT(*) AS count FROM jobs").get() as { count: number }).count;
+      for (const table of JOB_DATA_TABLES) this.db.prepare(`DELETE FROM ${table}`).run();
+      return jobCount;
+    });
+    return purge();
   }
 }

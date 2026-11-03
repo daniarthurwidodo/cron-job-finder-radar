@@ -1,4 +1,4 @@
-import { COUNTRY_CODES, HISTORY_DAYS_LIMIT, LIST_PAGE_SIZE, WORK_AUTHORIZATION_MAX_LENGTH, JOB_STATUSES, MINOR_UNITS_PER_MAJOR_UNIT, RECENT_SCRAPE_RUNS_LIMIT } from "@/lib/constants";
+import { COUNTRY_CODES, HISTORY_DAYS_LIMIT, RESET_CONFIRMATION_WORD, LIST_PAGE_SIZE, WORK_AUTHORIZATION_MAX_LENGTH, JOB_STATUSES, MINOR_UNITS_PER_MAJOR_UNIT, RECENT_SCRAPE_RUNS_LIMIT } from "@/lib/constants";
 import type { JobFilters } from "@/lib/dashboard/filters";
 import type { ColBenchmarkRecord, ColBenchmarkRepository } from "@/lib/repositories/colBenchmarkRepository";
 import type { DashboardJob, JobListQuery, JobQueryRepository } from "@/lib/repositories/jobQueryRepository";
@@ -78,6 +78,11 @@ export class DashboardService {
     if (jobIds.some((jobId) => !Number.isInteger(jobId) || jobId <= 0)) throw new Error(`Invalid job ids: ${jobIds.join(", ")}`);
     if (!Object.values(JOB_STATUSES).includes(statusCode as never)) throw new Error(`Invalid status: ${statusCode}`);
     return this.dependencies.jobQueries.updateStatuses({ jobIds: [...new Set(jobIds)], statusCode });
+  }
+
+  resetJobData(confirmation: string): number {
+    if (confirmation.trim() !== RESET_CONFIRMATION_WORD) throw new Error(`Type ${RESET_CONFIRMATION_WORD} to confirm`);
+    return this.dependencies.jobQueries.purgeJobData();
   }
 
   listColBenchmarks(): ColBenchmarkRecord[] {

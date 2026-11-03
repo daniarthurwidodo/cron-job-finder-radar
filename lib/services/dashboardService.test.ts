@@ -249,3 +249,22 @@ test("changeStatuses rejects empty, oversized, invalid ids and unknown status", 
   assert.throws(() => world.dashboard.changeStatuses({ jobIds: [jobId], statusCode: "nope" }));
   assert.notEqual(statusOf(world, jobId), JOB_STATUSES.INTERVIEWING);
 });
+
+function countRows(world: ReturnType<typeof buildWorld>, table: string): number {
+  return (world.db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get() as { count: number }).count;
+}
+
+test("resetJobData needs the confirmation word and deletes only job data", () => {
+  const world = buildWorld();
+  addJob({ world, job: { sourceJobId: "a", sourceUrl: "https://x.test/a", title: "Reset A Web Developer" }, day: LATEST_DAY });
+  addJob({ world, job: { sourceJobId: "b", sourceUrl: "https://x.test/b", title: "Reset B Web Developer" }, day: LATEST_DAY });
+  world.db.prepare("INSERT INTO scrape_runs (source_code, started_at) VALUES ('x', '2026-11-02T00:00:00Z')").run();
+  const benchmarksBefore = countRows(world, "col_benchmarks");
+  assert.throws(() => world.dashboard.resetJobData("reset"));
+  assert.throws(() => world.dashboard.resetJobData(""));
+  assert.equal(countRows(world, "jobs"), 2);
+  assert.equal(world.dashboard.resetJobData(" RESET "), 2);
+  for (const table of ["jobs", "companies", "job_sources", "job_tech_tags", "scrape_runs"]) assert.equal(countRows(world, table), 0, table);
+  assert.equal(countRows(world, "col_benchmarks"), benchmarksBefore);
+  assert.equal(countRows(world, "countries") > 0, true);
+});
